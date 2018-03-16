@@ -20,8 +20,6 @@ public class MainActivity extends AppCompatActivity {
         FAB.setOnClickListener(new View.OnClickListener() {
                                    @Override
                                    public void onClick(View view) {
-                                       Intent editor_activity =  new Intent(MainActivity.this, ItemDetailsActivity.class);
-                                       startActivity(editor_activity);
                                    }
                                }
 
