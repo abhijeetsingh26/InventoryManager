@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         //Listener for the main FAB button
         FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.addNewItemFAB);
         FAB.setOnClickListener(new View.OnClickListener() {
