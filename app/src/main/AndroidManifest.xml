@@ -21,6 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.ItemDetailsActivity"></activity>
+        <activity android:name=".Activity.BarcodeCaptureActivity"></activity>
+
     </application>
 
 </manifest>
