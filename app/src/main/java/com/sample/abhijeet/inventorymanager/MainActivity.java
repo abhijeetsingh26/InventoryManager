@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
+                Toast.makeText(this,"Failed to read barcode", Toast.LENGTH_SHORT).show();
             }
         }
         else

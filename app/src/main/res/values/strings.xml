@@ -4,4 +4,14 @@
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+
+
+    <!-- Sign_in Activity -->
+    <string name="title_text">Google Sign-In\nQuickstart</string>
+    <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="signed_in">Signed in</string>
+    <string name="signed_out">Signed out</string>
+    <string name="desc_google_icon">Google Logo</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="disconnect">Disconnect</string>
 </resources>
