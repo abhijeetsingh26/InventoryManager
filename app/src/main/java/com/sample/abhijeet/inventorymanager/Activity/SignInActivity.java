@@ -181,6 +181,7 @@ public class SignInActivity extends AppCompatActivity implements
         if(fromActivity !=null && fromActivity.equals(MainActivity.MAIN_ACTIVITY))
         {
             //Do nothing, stay on this page if it was a EXPLICIT request
+
         }
         else
         {
