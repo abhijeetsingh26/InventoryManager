@@ -1,10 +1,9 @@
-package com.sample.abhijeet.inventorymanager;
+package com.sample.abhijeet.inventorymanager.Activity;
 
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,9 +12,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.sample.abhijeet.inventorymanager.Activity.BarcodeCaptureActivity;
-import com.sample.abhijeet.inventorymanager.Activity.ItemDetailsActivity;
-import com.sample.abhijeet.inventorymanager.Activity.SignInActivity;
+import com.sample.abhijeet.inventorymanager.R;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RC_BARCODE_CAPTURE = 9001;
