@@ -7,11 +7,15 @@
 
 
     <!-- Sign_in Activity -->
-    <string name="title_text">Google Sign-In\nQuickstart</string>
+    <string name="title_text_not_signed_in">Google Sign-In</string>
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="signed_in">Signed in</string>
     <string name="signed_out">Signed out</string>
     <string name="desc_google_icon">Google Logo</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
+    <string name="title_text_successfull_sign_in">All set.</string>
+    <string name="proceed_button">Proceed</string>
+    <string name="sign_in">Sign In</string>
+    <string name="ask_user_sign_in">Not Signed In. Please Sign-In First.</string>>
 </resources>

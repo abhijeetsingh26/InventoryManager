@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="@string/title_text"
+            android:text="@string/title_text_not_signed_in"
             android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="36sp" />
@@ -55,13 +55,16 @@
             android:textSize="14sp" />
 
         <Button
-            android:id="@+id/button_optional_action"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:id="@+id/button_proceed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            tools:text="Optional Action"
-            tools:visibility="visible" />
+            android:text="@string/proceed_button"
+            android:textSize="18sp"
+            android:background="@color/blue_grey_900"
+            android:textColor="@android:color/white"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"/>
 
     </LinearLayout>
 
