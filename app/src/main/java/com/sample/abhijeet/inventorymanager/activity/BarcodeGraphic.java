@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.abhijeet.inventorymanager.Activity;
+package com.sample.abhijeet.inventorymanager.activity;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

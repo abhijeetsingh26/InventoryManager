@@ -1,4 +1,4 @@
-package com.sample.abhijeet.inventorymanager.Data.ItemDetailsTable;
+package com.sample.abhijeet.inventorymanager.Data.itemdetailstable;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

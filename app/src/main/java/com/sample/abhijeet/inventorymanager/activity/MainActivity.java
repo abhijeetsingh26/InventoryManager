@@ -1,4 +1,4 @@
-package com.sample.abhijeet.inventorymanager.Activity;
+package com.sample.abhijeet.inventorymanager.activity;
 
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
