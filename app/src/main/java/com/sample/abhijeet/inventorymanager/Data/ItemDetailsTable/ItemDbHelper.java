@@ -22,12 +22,12 @@ public class ItemDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String SQL_CREATE_TODO_TABLE = "CREATE TABLE " + ItemContract.ItemEntry.TABLE_NAME + " ("
-                + ItemContract.ItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ItemContract.ItemEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-                + ItemContract.ItemEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL, "
-                + ItemContract.ItemEntry.COLUMN_ITEM_VALUE + " INTEGER NOT NULL, "
-                + ItemContract.ItemEntry.COLUMN_OWNER + " TEXT NOT NULL;";
+        String SQL_CREATE_TODO_TABLE = "CREATE TABLE " + InventoryDatabaseContract.ItemEntry.TABLE_NAME + " ("
+                + InventoryDatabaseContract.ItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + InventoryDatabaseContract.ItemEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                + InventoryDatabaseContract.ItemEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL, "
+                + InventoryDatabaseContract.ItemEntry.COLUMN_ITEM_VALUE + " INTEGER NOT NULL, "
+                + InventoryDatabaseContract.ItemEntry.COLUMN_OWNER + " TEXT NOT NULL;";
 
         //Execute the SQL statement
         sqLiteDatabase.execSQL(SQL_CREATE_TODO_TABLE);
