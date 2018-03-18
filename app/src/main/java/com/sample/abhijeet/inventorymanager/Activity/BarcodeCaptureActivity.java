@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sample.abhijeet.inventorymanager.activity;
+package com.sample.abhijeet.inventorymanager.Activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

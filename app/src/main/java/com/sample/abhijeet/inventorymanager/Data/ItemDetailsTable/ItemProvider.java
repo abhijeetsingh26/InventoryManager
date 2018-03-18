@@ -1,4 +1,4 @@
-package com.sample.abhijeet.inventorymanager.Data.itemdetailstable;
+package com.sample.abhijeet.inventorymanager.Data.ItemDetailsTable;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

@@ -1,22 +1,25 @@
-package com.sample.abhijeet.inventorymanager.activity;
+package com.sample.abhijeet.inventorymanager.Activity;
 
-import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
+        import android.app.ProgressDialog;
+        import android.content.Intent;
+        import android.os.AsyncTask;
+        import android.support.design.widget.FloatingActionButton;
+        import android.support.v7.app.AppCompatActivity;
+        import android.os.Bundle;
+        import android.view.Menu;
+        import android.view.MenuInflater;
+        import android.view.MenuItem;
+        import android.view.View;
+        import android.widget.Toast;
 
-import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.vision.barcode.Barcode;
-import com.sample.abhijeet.inventorymanager.R;
+        import com.google.android.gms.common.api.CommonStatusCodes;
+        import com.google.android.gms.vision.barcode.Barcode;
+        import com.sample.abhijeet.inventorymanager.R;
+        import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int RC_BARCODE_CAPTURE = 9001;
     public static final String MAIN_ACTIVITY = "MainActivity";
+    private static final int RC_BARCODE_CAPTURE = 9001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,18 @@ public class MainActivity extends AppCompatActivity {
 
         );
 
+
+        FloatingActionButton mgetTestDataFAB = (FloatingActionButton) findViewById(R.id.getTestDataFAB);
+        FAB.setOnClickListener(new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View view) {
+                                       JSONAsyncTask task = new JSONAsyncTask();
+                                       task.execute("http://localhost:8080/inventorywebservice/api/user/1");
+
+                                   }
+                               }
+
+        );
 
 
     }
@@ -93,5 +108,23 @@ public class MainActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    private class JSONAsyncTask extends AsyncTask<String,Void,String> {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String result = NetworkUtils.getJSONDataFromUrl("http://192.168.1.103:8080/inventorywebservice/api/user/1");
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String data)
+        {
+            Toast.makeText(MainActivity.this, "Data received is = " + data, Toast.LENGTH_SHORT).show();
+        }
+    }
 }
+
 

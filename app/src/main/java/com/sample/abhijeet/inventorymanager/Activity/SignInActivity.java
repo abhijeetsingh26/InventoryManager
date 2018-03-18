@@ -1,4 +1,4 @@
-package com.sample.abhijeet.inventorymanager.activity;
+package com.sample.abhijeet.inventorymanager.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
