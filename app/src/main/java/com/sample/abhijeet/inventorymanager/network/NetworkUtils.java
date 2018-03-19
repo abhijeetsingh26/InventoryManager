@@ -1,10 +1,10 @@
 package com.sample.abhijeet.inventorymanager.network;
 
-import android.text.TextUtils;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -15,9 +15,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.Random;
 
-import com.sample.abhijeet.inventorymanager.models.SimpleUser;
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by abhi2 on 3/18/2018.
@@ -106,6 +106,40 @@ public class NetworkUtils {
             }
         }
         return output.toString();
+    }
+    public static String random() {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(3);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++){
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
+    }
+    public static void samplePOST(){
+        String name = "androidUser" + random();
+        RequestParams params = new RequestParams();
+        params.put("id", "7");
+        params.put("name", name);
+        params.put("age", "30");
+        params.put("salary", "3000");
+        RestClient.post("/user/", params, new JsonHttpResponseHandler()
+        {
+
+
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("Success: ", ""+statusCode);
+            }
+
+
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Log.d("Failed: ", ""+statusCode);
+                Log.d("Error : ", "" + throwable);
+            }
+        });
     }
 
 }

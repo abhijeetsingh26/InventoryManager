@@ -58,7 +58,7 @@ public class SignInActivity extends AppCompatActivity implements
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken("964454991177-349ccvkm1h0a974lvc6lmi0gk36nvtrf.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
         // [END configure_signin]
@@ -163,6 +163,7 @@ public class SignInActivity extends AppCompatActivity implements
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
             mProceedButton.setVisibility(View.VISIBLE);
             isUserSignedIN = true;
+            Toast.makeText(this, "Token=" + account.getIdToken(), Toast.LENGTH_SHORT).show();
             proceedForCondition();
         } else {
             // Unsuccessfull Sign-In
