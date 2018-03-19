@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         FloatingActionButton mgetTestDataFAB = (FloatingActionButton) findViewById(R.id.getTestDataFAB);
-        FAB.setOnClickListener(new View.OnClickListener() {
+        mgetTestDataFAB.setOnClickListener(new View.OnClickListener() {
                                    @Override
                                    public void onClick(View view) {
                                        JSONAsyncTask task = new JSONAsyncTask();
