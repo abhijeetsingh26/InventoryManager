@@ -55,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
 
         );
 
+        FloatingActionButton mpostTestDataFAB = (FloatingActionButton) findViewById(R.id.postTestDataFAB);
+        mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
+                                               @Override
+                                               public void onClick(View view) {
+                                                NetworkUtils.samplePOST();
+                                               }
+                                           }
+
+        );
 
     }
 

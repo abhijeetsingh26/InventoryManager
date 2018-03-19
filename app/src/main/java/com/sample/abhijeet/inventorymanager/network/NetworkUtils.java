@@ -1,7 +1,9 @@
 package com.sample.abhijeet.inventorymanager.network;
 
-import android.text.TextUtils;
 import android.util.Log;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,9 +17,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.Random;
 
-import com.sample.abhijeet.inventorymanager.models.SimpleUser;
+import cz.msebera.android.httpclient.entity.mime.Header;
 
 /**
  * Created by abhi2 on 3/18/2018.
@@ -106,6 +108,45 @@ public class NetworkUtils {
             }
         }
         return output.toString();
+    }
+    public static String random() {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(3);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++){
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
+    }
+    public static void samplePOST(){
+        String name = "androidUser" + random();
+        RequestParams params = new RequestParams();
+        params.put("id", "7");
+        params.put("name", name);
+        params.put("age", "30");
+        params.put("salary", "3000");
+        RestClient.get("http://192.168.1.103:8080/inventorywebservice/api/user/", params, new JsonHttpResponseHandler() {
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+            }
+
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+                JSONObject firstEvent = null;
+                String tweetText ="";
+                try {
+                    firstEvent = (JSONObject)timeline.get(0);
+                    tweetText = firstEvent.getString("text");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                // Do something with the response
+                System.out.println(tweetText);
+            }
+        });
     }
 
 }
