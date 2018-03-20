@@ -1,5 +1,7 @@
 package com.sample.abhijeet.inventorymanager.network;
 
+import android.util.Log;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -10,7 +12,7 @@ import com.loopj.android.http.RequestParams;
 
 public class RestClient
 {
-    private static final String BASE_URL = "http://192.168.1.103:8080/inventorywebservice/api";
+    private static final String BASE_URL = "http://192.168.1.5:8080/inventorywebservice/api";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
@@ -19,7 +21,8 @@ public class RestClient
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.post(getAbsoluteUrl(url), params, responseHandler);
+        Log.e(">>>>>>>>>>>>URL",getAbsoluteUrl(url));
+        client.post(getAbsoluteUrl(url), null, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {

@@ -130,14 +130,14 @@ public class NetworkUtils {
 
 
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("Success: ", ""+statusCode);
+                Log.e(">>>>>>>>>>>>>Success: ", ""+statusCode);
             }
 
 
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-                Log.d("Failed: ", ""+statusCode);
-                Log.d("Error : ", "" + throwable);
+                Log.e(">>>>>>>>>>>>>Failed: ", ""+statusCode);
+                Log.e(">>>>>>>>>>>>>Error : ", "" + throwable);
             }
         });
     }
