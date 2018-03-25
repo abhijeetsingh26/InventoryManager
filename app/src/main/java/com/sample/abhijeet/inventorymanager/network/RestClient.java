@@ -12,7 +12,7 @@ import com.loopj.android.http.RequestParams;
 
 public class RestClient
 {
-    private static final String BASE_URL = "http://192.168.1.5:8080/inventorywebservice/api";
+    private static final String BASE_URL = "http://192.168.1.103:8080/inventorywebservice/api";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
