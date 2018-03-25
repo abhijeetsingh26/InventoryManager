@@ -1,9 +1,17 @@
 package com.sample.abhijeet.inventorymanager.network;
 
 import android.util.Log;
+import android.widget.Toast;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.sample.abhijeet.inventorymanager.beans.LoginResponseBean;
+import com.sample.abhijeet.inventorymanager.beans.UserLoginBean;
+import com.sample.abhijeet.inventorymanager.util.LogUtils;
+import com.sample.abhijeet.inventorymanager.util.MyApplication;
 
 import org.json.JSONObject;
 
@@ -11,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,6 +27,7 @@ import java.nio.charset.Charset;
 import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 /**
  * Created by abhi2 on 3/18/2018.
@@ -42,7 +52,7 @@ public class NetworkUtils {
         try {
             jsonResponse = makehttpRequest(url);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error in making http request", e);
+            LogUtils.logDebug( "Error in making http request", e);
         }
         return jsonResponse;
     }
@@ -127,21 +137,69 @@ public class NetworkUtils {
         params.put("salary", "3000");
         RestClient.post("/user/", params, new JsonHttpResponseHandler()
         {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                LogUtils.logError(">>>>>>>>>>>>>Failed: "+statusCode);
+                LogUtils.logError(">>>>>>>>>>>>>Error : " + throwable);
+            }
 
-
+            @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.e(">>>>>>>>>>>>>Success: ", ""+statusCode);
             }
 
-
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-                Log.e(">>>>>>>>>>>>>Failed: ", ""+statusCode);
-                Log.e(">>>>>>>>>>>>>Error : ", "" + throwable);
-            }
         });
     }
 
+
+    public static void LoginPost(String idToken){
+        RequestParams params = new RequestParams();
+        AsyncHttpClient client =  RestClient.getAsyncHttpClientInstance();
+        UserLoginBean ulb = new UserLoginBean();
+        ulb.setIdToken(idToken);
+        ulb.setUser_email("xyz@gmail.com");
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonAsString ="";
+        StringEntity entity = null;
+        try {
+            jsonAsString = mapper.writeValueAsString(ulb);
+            entity = new StringEntity(jsonAsString);
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String contentType = "application/json";
+        RestClient.post("/Login/user/",entity,contentType, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                LogUtils.logError(">>>>>>>>>>>>>Failed: "+statusCode);
+                LogUtils.logError(">>>>>>>>>>>>>Error : " + throwable);
+                ObjectMapper om = new ObjectMapper();
+                LoginResponseBean lrb = null;
+                try {
+                    lrb = om.readValue(errorResponse.toString(), LoginResponseBean.class);
+                } catch (IOException e)
+                {
+                    LogUtils.logError("Failed To parse response",e);
+                }
+                Toast.makeText(MyApplication.getAppContext(), lrb.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                LogUtils.logError(">>>>>>>>>>>>>Success 2: "+statusCode);
+               ObjectMapper om = new ObjectMapper();
+                LoginResponseBean lrb = null;
+                try {
+                    lrb = om.readValue(response.toString(), LoginResponseBean.class);
+                } catch (IOException e)
+                {
+                    LogUtils.logError("Failed To parse response",e);
+                }
+                Toast.makeText(MyApplication.getAppContext(), "Logged-In as  "+ lrb.getUserFname(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
 
 

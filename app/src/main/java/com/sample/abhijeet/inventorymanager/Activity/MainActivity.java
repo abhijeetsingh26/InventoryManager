@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-            String result = NetworkUtils.getJSONDataFromUrl("http://192.168.1.103:8080/inventorywebservice/api/user/1");
+            String result = NetworkUtils.getJSONDataFromUrl("http://192.168.1.101:8080/inventorywebservice/api/user/1");
             return result;
         }
 
