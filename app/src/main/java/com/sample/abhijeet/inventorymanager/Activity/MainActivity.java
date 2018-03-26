@@ -1,25 +1,29 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
-        import android.app.ProgressDialog;
-        import android.content.Intent;
-        import android.os.AsyncTask;
-        import android.support.design.widget.FloatingActionButton;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.view.Menu;
-        import android.view.MenuInflater;
-        import android.view.MenuItem;
-        import android.view.View;
-        import android.widget.Toast;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
-        import com.google.android.gms.common.api.CommonStatusCodes;
-        import com.google.android.gms.vision.barcode.Barcode;
-        import com.sample.abhijeet.inventorymanager.R;
-        import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.sample.abhijeet.inventorymanager.R;
+import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
+import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
+    private static final String APP_DATA_PREFERECES = "appDataPrefrences";
+    private static final String APP_DATA_PREFERENCES_USER_UUID = "userUUID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
                                                @Override
                                                public void onClick(View view) {
-                                                NetworkUtils.samplePOST();
+                                                   PurchaseAsyncTask task = new PurchaseAsyncTask();
+                                                   task.execute("xxxxx");
                                                }
                                            }
 
@@ -101,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     Toast.makeText(this,"Success, value= "  + barcode.displayValue, Toast.LENGTH_SHORT).show();
+                    PurchaseAsyncTask task = new PurchaseAsyncTask();
+                    task.execute(barcode.displayValue);
                 }
                 else
                 {
@@ -124,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-            String result = NetworkUtils.getJSONDataFromUrl("http://192.168.1.101:8080/inventorywebservice/api/user/1");
+            String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
+            String result = NetworkUtils.getJSONDataFromUrl(base_url+"/api/user/1");
             return result;
         }
 
@@ -133,6 +141,51 @@ public class MainActivity extends AppCompatActivity {
         {
             Toast.makeText(MainActivity.this, "Data received is = " + data, Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+
+
+    private class PurchaseAsyncTask extends AsyncTask<String,Void,PurchaseResponseBean> {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected PurchaseResponseBean doInBackground(String... strings) {
+            String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
+            PurchaseResponseBean prb = NetworkUtils.purchasePost("001-002-003-004","5326188d-653d-4173-be8e-d8f83486d0ad");
+            return prb;
+        }
+
+        @Override
+        protected void onPostExecute(PurchaseResponseBean prb)
+        {
+            if(prb != null) {
+                Toast.makeText(MainActivity.this, "Purchase Data received is = " + prb.getPurchaseSerial(), Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(MainActivity.this, "Purchase Data received is  empty", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES, MODE_PRIVATE);
+        myPrefs.edit().remove(APP_DATA_PREFERENCES_USER_UUID);
+        myPrefs.edit().clear();
+        myPrefs.edit().commit();
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES,MODE_PRIVATE);
+        myPrefs.edit().remove(APP_DATA_PREFERENCES_USER_UUID);
+        myPrefs.edit().clear();
+        myPrefs.edit().commit();
     }
 }
 

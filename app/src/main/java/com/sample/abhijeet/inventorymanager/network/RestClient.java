@@ -5,6 +5,7 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.util.MyApplication;
 
 import cz.msebera.android.httpclient.HttpEntity;
@@ -15,7 +16,7 @@ import cz.msebera.android.httpclient.HttpEntity;
 
 public class RestClient
 {
-    private static final String BASE_URL = "http://192.168.1.101:8080/inventorywebservice/";
+    private static final String BASE_URL =  MyApplication.getAppContext().getResources().getString(R.string.SERVER_BASE_URL);
 
     private static  final AsyncHttpClient client = new AsyncHttpClient();
 
