@@ -6,9 +6,13 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 import com.sample.abhijeet.inventorymanager.beans.LoginResponseBean;
+import com.sample.abhijeet.inventorymanager.beans.PurchaseRequestBean;
+import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
 import com.sample.abhijeet.inventorymanager.beans.UserLoginBean;
 import com.sample.abhijeet.inventorymanager.util.LogUtils;
 import com.sample.abhijeet.inventorymanager.util.MyApplication;
@@ -37,6 +41,8 @@ public class NetworkUtils {
     public static final String LOG_TAG = NetworkUtils.class.getSimpleName();
 
     private static final NetworkUtils ourInstance = new NetworkUtils();
+
+    static PurchaseResponseBean returnPRB = null;
 
     public static NetworkUtils getInstance() {
         return ourInstance;
@@ -153,6 +159,12 @@ public class NetworkUtils {
 
 
     public static void LoginPost(String idToken){
+//        ProgressDialog progress = new ProgressDialog(MyApplication.getAppContext());
+//        progress.setTitle("Authenticating");
+//        progress.setMessage("Connecting to Server, Please wait.");
+//        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+//        progress.show();
+
         RequestParams params = new RequestParams();
         AsyncHttpClient client =  RestClient.getAsyncHttpClientInstance();
         UserLoginBean ulb = new UserLoginBean();
@@ -199,6 +211,62 @@ public class NetworkUtils {
                 Toast.makeText(MyApplication.getAppContext(), "Logged-In as  "+ lrb.getUserFname(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+
+    public static PurchaseResponseBean purchasePost(String itemBarcode, String userUUID){
+
+//        ProgressDialog progress = new ProgressDialog(MyApplication.getAppContext());
+//        progress.setTitle("Authenticating");
+//        progress.setMessage("Connecting to Server, Please wait.");
+//        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+//        progress.show();
+        RequestParams params = new RequestParams();
+        SyncHttpClient client =   new SyncHttpClient();
+        PurchaseRequestBean prb = new PurchaseRequestBean();
+        prb.setItemBarCode(itemBarcode);
+        prb.setUserUUID(userUUID);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonAsString ="";
+        StringEntity entity = null;
+        try {
+            jsonAsString = mapper.writeValueAsString(prb);
+            entity = new StringEntity(jsonAsString);
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        String contentType = "application/json";
+        client.post(MyApplication.getAppContext(),"http://192.168.1.102:8080/inventorywebservice/item/purchase/",entity,contentType, new AsyncHttpResponseHandler()
+        {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                ObjectMapper om = new ObjectMapper();
+             //   om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+                try {
+                    String response =  new String(responseBody);
+                    Log.e("TAGGG", response);
+                    returnPRB = om.readValue(response, PurchaseResponseBean.class);
+                } catch (IOException e)
+                {
+                    LogUtils.logError("Failed To parse response",e);
+                    Log.e("TAGGGGGG","meessage", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                ObjectMapper om = new ObjectMapper();
+                try {
+                    returnPRB = om.readValue(responseBody.toString(), PurchaseResponseBean.class);
+                } catch (IOException e)
+                {
+                    LogUtils.logError("Failed To parse response",e);
+                }
+            }
+        });
+        return returnPRB;
     }
 }
 
