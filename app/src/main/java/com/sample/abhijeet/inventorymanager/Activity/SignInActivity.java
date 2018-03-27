@@ -1,6 +1,9 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +23,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.sample.abhijeet.inventorymanager.R;
+import com.sample.abhijeet.inventorymanager.beans.LoginResponseBean;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 
 /**
@@ -133,6 +137,10 @@ public class SignInActivity extends AppCompatActivity implements
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, null);
+                        editor.commit();
                         // [START_EXCLUDE]
                         updateUI(null);
                         // [END_EXCLUDE]
@@ -147,6 +155,10 @@ public class SignInActivity extends AppCompatActivity implements
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, null);
+                        editor.commit();
                         // [START_EXCLUDE]
                         updateUI(null);
                         // [END_EXCLUDE]
@@ -166,9 +178,16 @@ public class SignInActivity extends AppCompatActivity implements
             isUserSignedIN = true;
             String token = account.getIdToken();
            // Toast.makeText(this, "Token=" + token, Toast.LENGTH_SHORT).show();
-            NetworkUtils.LoginPost(token);
-           // NetworkUtils.LoginPost2(token);
-            proceedForCondition();
+            SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            String userUUID =  pref.getString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, null);
+            if(userUUID == null) {
+                LoginAsyncTask task = new LoginAsyncTask();
+                task.execute(token);
+            }
+            else {
+                proceedForCondition();
+            }
         } else {
             // Unsuccessfull Sign-In
             mStatusTextView.setText(R.string.signed_out);
@@ -196,7 +215,7 @@ public class SignInActivity extends AppCompatActivity implements
 
     private void proceed()
     {
-        Intent mainActivityIntent =  new Intent(this, MainActivity.class);
+      Intent mainActivityIntent =  new Intent(this, MainActivity.class);
         startActivity(mainActivityIntent);
     }
 
@@ -228,4 +247,49 @@ public class SignInActivity extends AppCompatActivity implements
             Toast.makeText(this, R.string.ask_user_sign_in, Toast.LENGTH_SHORT).show();
 
     }
+
+    private class LoginAsyncTask extends AsyncTask<String, Void, LoginResponseBean> {
+
+       private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(SignInActivity.this);
+            progressDialog.setTitle("Connecting to Server");
+            progressDialog.setMessage("Please wait.");
+            progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
+            progressDialog.show();
+        }
+
+        @Override
+        protected LoginResponseBean doInBackground(String...  token) {
+
+            String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
+              LoginResponseBean lrb =  NetworkUtils.LoginPost(token[0]);
+            return lrb;
+        }
+
+        @Override
+        protected void onPostExecute(LoginResponseBean lrb) {
+            progressDialog.dismiss();
+            if (lrb != null) {
+                Toast.makeText(SignInActivity.this, "Logged-In as  " + lrb.getUserFname(), Toast.LENGTH_SHORT).show();
+                SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, lrb.getUserUUID());
+                editor.commit();
+
+                Intent mainActivityIntent =  new Intent(SignInActivity.this, MainActivity.class);
+                startActivity(mainActivityIntent);
+
+            } else {
+                Toast.makeText(SignInActivity.this, "No Response From Server !", Toast.LENGTH_SHORT).show();
+            }
+
+
+
+        }
+    }
+
 }

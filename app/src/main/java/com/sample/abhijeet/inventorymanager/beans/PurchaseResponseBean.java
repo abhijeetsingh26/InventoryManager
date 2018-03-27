@@ -38,11 +38,11 @@ public class PurchaseResponseBean implements Serializable {
         this.purchaseSerial = purchaseSerial;
     }
 
-    public Boolean getPurchaseSuccessfull() {
+    public Boolean getisPurchaseSuccessfull() {
         return isPurchaseSuccessfull;
     }
 
-    public void setPurchaseSuccessfull(Boolean purchaseSuccessfull) {
+    public void setisPurchaseSuccessfull(Boolean purchaseSuccessfull) {
         isPurchaseSuccessfull = purchaseSuccessfull;
     }
 
