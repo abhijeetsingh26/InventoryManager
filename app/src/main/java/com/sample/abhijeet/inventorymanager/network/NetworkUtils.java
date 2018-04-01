@@ -10,6 +10,7 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.beans.LoginResponseBean;
+import com.sample.abhijeet.inventorymanager.beans.PurchaseDetailResponseBean;
 import com.sample.abhijeet.inventorymanager.beans.PurchaseRequestBean;
 import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
 import com.sample.abhijeet.inventorymanager.beans.UserLoginBean;
@@ -257,6 +258,44 @@ public class NetworkUtils {
             }
         });
         return returnPRB;
+    }
+
+
+
+    public static PurchaseDetailResponseBean purchasePost(String userUUID){
+
+        RequestParams params = new RequestParams();
+        SyncHttpClient client =   new SyncHttpClient();
+        String base_url = MyApplication.getAppContext().getResources().getString(R.string.SERVER_BASE_URL);
+        String contentType = "application/json";
+        client.get(MyApplication.getAppContext(),base_url+"/item/purchase/"+userUUID, new AsyncHttpResponseHandler()
+        {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                ObjectMapper om = new ObjectMapper();
+                try {
+                    String response =  new String(responseBody);
+                    Log.e("TAGGG", response);
+                    returnPRB = om.readValue(response, PurchaseResponseBean.class);
+                } catch (IOException e)
+                {
+                    LogUtils.logError("Failed To parse response",e);
+                    Log.e("TAGGGGGG","meessage", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                ObjectMapper om = new ObjectMapper();
+                try {
+                    returnPRB = om.readValue(responseBody.toString(), PurchaseResponseBean.class);
+                } catch (IOException e)
+                {
+                    LogUtils.logError("Failed To parse response",e);
+                }
+            }
+        });
+        return null;
     }
 }
 
