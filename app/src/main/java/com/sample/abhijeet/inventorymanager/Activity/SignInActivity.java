@@ -226,6 +226,9 @@ public class SignInActivity extends AppCompatActivity implements
             super.onBackPressed();
         else
             Toast.makeText(this, R.string.ask_user_sign_in, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.ask_user_sign_in, Toast.LENGTH_SHORT).show();
 
     }
+
+    //changes//
 }
