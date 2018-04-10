@@ -3,5 +3,6 @@
     <string name="SERVER_PORT">Inventory Manager</string>
     <string name="SERVER_PASSWORD">Inventory Manager</string>
     <string name="SERVER_USERNAME">Inventory Manager</string>
-    <string name="SERVER_CLIENT_ID"></string>
+    <string name="SERVER_CLIENT_ID">dddd</string>
+    <string name="SERVER_BASE_URL">dddd</string>
 </resources>

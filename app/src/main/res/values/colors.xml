@@ -18,4 +18,10 @@
     <color name="blue_grey_700">#455A64</color>
     <color name="blue_grey_900">#263238</color>
     <color name="blue_grey_500">#607D8B</color>
+
+    <color name="textColorListDetails">#B4BAC0</color>
+    <color name="textColorListDetails2">#2B3D4D</color>
+
+    <color name="magnitude1">#4A7BA7</color>
+
 </resources>

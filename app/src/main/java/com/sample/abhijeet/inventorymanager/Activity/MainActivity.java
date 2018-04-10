@@ -22,8 +22,8 @@ import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
-    private static final String APP_DATA_PREFERECES = "appDataPrefrences";
-    private static final String APP_DATA_PREFERENCES_USER_UUID = "userUUID";
+    public static final String APP_DATA_PREFERECES = "appDataPrefrences";
+    public static final String APP_DATA_PREFERENCES_USER_UUID = "userUUID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,24 +49,27 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton mgetTestDataFAB = (FloatingActionButton) findViewById(R.id.getTestDataFAB);
         mgetTestDataFAB.setOnClickListener(new View.OnClickListener() {
-                                   @Override
-                                   public void onClick(View view) {
-                                       JSONAsyncTask task = new JSONAsyncTask();
-                                       task.execute("http://localhost:8080/inventorywebservice/api/user/1");
-
-                                   }
-                               }
+                                               @Override
+                                               public void onClick(View view) {
+                                                   JSONAsyncTask task = new JSONAsyncTask();
+                                                   task.execute("http://localhost:8080/inventorywebservice/api/user/1");
+                                                   SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
+                                                   SharedPreferences.Editor editor = pref.edit();
+                                                   String userUUID =  pref.getString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, null);
+                                                   Toast.makeText(MainActivity.this, userUUID, Toast.LENGTH_SHORT).show();
+                                               }
+                                           }
 
         );
 
         FloatingActionButton mpostTestDataFAB = (FloatingActionButton) findViewById(R.id.postTestDataFAB);
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View view) {
-                                                   PurchaseAsyncTask task = new PurchaseAsyncTask();
-                                                   task.execute("xxxxx");
-                                               }
-                                           }
+                                                @Override
+                                                public void onClick(View view) {
+                                                    PurchaseAsyncTask task = new PurchaseAsyncTask();
+                                                    task.execute("xxxxx");
+                                                }
+                                            }
 
         );
 
@@ -91,97 +94,95 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void gotoSignInACtivity()
-    {
+    private void gotoSignInACtivity() {
         Intent signInActivityIntent = new Intent(this, SignInActivity.class);
         signInActivityIntent.putExtra("fromActivity", MAIN_ACTIVITY);
         startActivity(signInActivityIntent);
     }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_BARCODE_CAPTURE)
-        {
-            if (resultCode == CommonStatusCodes.SUCCESS)
-            {
-                if (data != null)
-                {
+        if (requestCode == RC_BARCODE_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                    Toast.makeText(this,"Success, value= "  + barcode.displayValue, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Success, value= " + barcode.displayValue, Toast.LENGTH_SHORT).show();
                     PurchaseAsyncTask task = new PurchaseAsyncTask();
                     task.execute(barcode.displayValue);
+                } else {
+                    Toast.makeText(this, "Failed to read barcode", Toast.LENGTH_SHORT).show();
                 }
-                else
-                {
-                    Toast.makeText(this,"Failed to read barcode", Toast.LENGTH_SHORT).show();
-                }
+            } else {
+                Toast.makeText(this, "Failed to read barcode", Toast.LENGTH_SHORT).show();
             }
-            else
-            {
-                Toast.makeText(this,"Failed to read barcode", Toast.LENGTH_SHORT).show();
-            }
-        }
-        else
-        {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    private class JSONAsyncTask extends AsyncTask<String,Void,String> {
+    private class JSONAsyncTask extends AsyncTask<String, Void, String> {
 
         private ProgressDialog progressDialog;
 
         @Override
         protected String doInBackground(String... strings) {
             String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
-            String result = NetworkUtils.getJSONDataFromUrl(base_url+"/api/user/1");
+            String result = NetworkUtils.getJSONDataFromUrl(base_url + "/api/user/1");
             return result;
         }
 
         @Override
-        protected void onPostExecute(String data)
-        {
+        protected void onPostExecute(String data) {
             Toast.makeText(MainActivity.this, "Data received is = " + data, Toast.LENGTH_SHORT).show();
         }
     }
 
 
-
-
-    private class PurchaseAsyncTask extends AsyncTask<String,Void,PurchaseResponseBean> {
+    private class PurchaseAsyncTask extends AsyncTask<String, Void, PurchaseResponseBean> {
 
         private ProgressDialog progressDialog;
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setTitle("Authenticating");
+            progressDialog.setMessage("Connecting to Server, Please wait.");
+            progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
+            progressDialog.show();
+        }
+
+        @Override
         protected PurchaseResponseBean doInBackground(String... strings) {
+
             String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
-            PurchaseResponseBean prb = NetworkUtils.purchasePost("001-002-003-004","5326188d-653d-4173-be8e-d8f83486d0ad");
+            PurchaseResponseBean prb = NetworkUtils.purchasePost("001-002-003-004", "5326188d-653d-4173-be8e-d8f83486d0ad");
             return prb;
         }
 
         @Override
-        protected void onPostExecute(PurchaseResponseBean prb)
-        {
-            if(prb!=null)
-            Toast.makeText(MainActivity.this, "Purchase Data received is = " + prb.getPurchaseSerial(), Toast.LENGTH_SHORT).show();
-            else
+        protected void onPostExecute(PurchaseResponseBean prb) {
+            progressDialog.dismiss();
+            if (prb != null) {
+                Toast.makeText(MainActivity.this, "Purchase Data received is = " + prb.getPurchaseSerial(), Toast.LENGTH_SHORT).show();
+            } else
                 Toast.makeText(MainActivity.this, "Purchase Data received is  empty", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES, MODE_PRIVATE);
         myPrefs.edit().remove(APP_DATA_PREFERENCES_USER_UUID);
         myPrefs.edit().clear();
         myPrefs.edit().commit();
+
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
-        SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES,MODE_PRIVATE);
+        SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES, MODE_PRIVATE);
         myPrefs.edit().remove(APP_DATA_PREFERENCES_USER_UUID);
         myPrefs.edit().clear();
         myPrefs.edit().commit();
