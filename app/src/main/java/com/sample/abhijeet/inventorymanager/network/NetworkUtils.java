@@ -262,7 +262,7 @@ public class NetworkUtils {
 
 
 
-    public static PurchaseDetailResponseBean purchasePost(String userUUID){
+    public static PurchaseDetailResponseBean purchaseDetailsPost(String userUUID){
 
         RequestParams params = new RequestParams();
         SyncHttpClient client =   new SyncHttpClient();

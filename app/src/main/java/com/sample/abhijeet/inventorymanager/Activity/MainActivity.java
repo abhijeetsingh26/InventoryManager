@@ -73,6 +73,18 @@ public class MainActivity extends AppCompatActivity {
 
         );
 
+        FloatingActionButton mgetTestPurchaseDetails = (FloatingActionButton) findViewById(R.id.getTestPurchaseDetails);
+        mgetTestPurchaseDetails.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+
+                                                    Toast.makeText(MainActivity.this, "JUST A TOAST FOR NOW", Toast.LENGTH_SHORT).show();
+
+                                                }
+                                            }
+
+        );
+
     }
 
     @Override
