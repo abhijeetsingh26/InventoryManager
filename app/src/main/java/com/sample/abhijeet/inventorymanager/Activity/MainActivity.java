@@ -1,33 +1,23 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
 import android.app.ProgressDialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
-import com.sample.abhijeet.inventorymanager.models.PurchaseDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
@@ -94,27 +84,6 @@ public class MainActivity extends AppCompatActivity {
                                             }
 
         );
-
-//
-//        final ListView listView = (ListView) findViewById(R.id.list);
-//        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressbar);
-//        progressBar.setVisibility(View.VISIBLE);
-//        PurchaseDetailsViewModel model = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
-//        model.getFruitList().observe(this, new Observer<List<String>>() {
-//            @Override
-//            public void onChanged(@Nullable List<String> strings)
-//            {
-//               // ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.class,android.R.layout.simple_list_item_1, android.R.id.text1);
-//                List<String> objects =  new ArrayList<>();
-//                objects.add("ONE");
-//                objects.add("TWO");
-//                objects.add("THREE");
-//                ArrayAdapter<String> adapter = new ArrayAdapter(MainActivity.this,android.R.layout.simple_list_item_1, android.R.id.text1, objects);
-//                // Assign adapter to ListView
-//                listView.setAdapter(adapter);
-//                progressBar.setVisibility(View.GONE);
-//            }
-//        } );
 
     }
 
