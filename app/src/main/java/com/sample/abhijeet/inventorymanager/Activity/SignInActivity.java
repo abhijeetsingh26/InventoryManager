@@ -20,7 +20,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.sample.abhijeet.inventorymanager.R;
-import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
+import com.sample.abhijeet.inventorymanager.network.Repository;
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -166,7 +166,9 @@ public class SignInActivity extends AppCompatActivity implements
             isUserSignedIN = true;
             String token = account.getIdToken();
            // Toast.makeText(this, "Token=" + token, Toast.LENGTH_SHORT).show();
-            NetworkUtils.LoginPost(token);
+            Repository repository =  new Repository();
+            repository.loginUser(token);
+            //NetworkUtils.LoginPost(token);
            // NetworkUtils.LoginPost2(token);
             proceedForCondition();
         } else {

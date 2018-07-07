@@ -181,6 +181,7 @@ public class NetworkUtils {
         {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("ERROR CODE>>>>>>" ,  "" +statusCode);
                 LogUtils.logError(">>>>>>>>>>>>>Success 2: "+statusCode);
                 ObjectMapper om = new ObjectMapper();
                 try {

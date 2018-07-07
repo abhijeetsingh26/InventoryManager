@@ -1,13 +1,11 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
 import android.app.ProgressDialog;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -22,12 +20,12 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.sample.abhijeet.inventorymanager.R;
+import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
+import com.sample.abhijeet.inventorymanager.beans.PurchaseDetailResponseBean;
 import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
 import com.sample.abhijeet.inventorymanager.models.PurchaseDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
@@ -66,11 +64,26 @@ public class MainActivity extends AppCompatActivity {
                                                    SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
                                                    SharedPreferences.Editor editor = pref.edit();
                                                    String userUUID =  pref.getString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, null);
-                                                   Toast.makeText(MainActivity.this, userUUID, Toast.LENGTH_SHORT).show();
+                                                   Toast.makeText(MainActivity.this, "userUUID" +userUUID, Toast.LENGTH_SHORT).show();
                                                }
                                            }
 
         );
+
+
+
+        final ListView listView = (ListView) findViewById(R.id.main_ListView);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        progressBar.setVisibility(View.VISIBLE);
+        PurchaseDetailsViewModel model = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
+        model.getPurchaseList().observe(this, purchaseList -> {
+            // update UI
+            ArrayAdapter<PurchaseDetailResponseBean> adapter = null;
+            if(null != purchaseList)
+            adapter = new PurchaseDetailsBeanAdapter(MainActivity.this,R.layout.purchase_details_listitem, purchaseList);
+            listView.setAdapter(adapter);
+            progressBar.setVisibility(View.GONE);
+        });
 
         FloatingActionButton mpostTestDataFAB = (FloatingActionButton) findViewById(R.id.postTestDataFAB);
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                                                 public void onClick(View view) {
                                                     PurchaseAsyncTask task = new PurchaseAsyncTask();
                                                     task.execute("xxxxx");
+
                                                 }
                                             }
 
@@ -85,36 +99,15 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton mgetTestPurchaseDetails = (FloatingActionButton) findViewById(R.id.getTestPurchaseDetails);
         mgetTestPurchaseDetails.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-
-                                                    Toast.makeText(MainActivity.this, "JUST A TOAST FOR NOW", Toast.LENGTH_SHORT).show();
-
-                                                }
-                                            }
+                                                       @Override
+                                                       public void onClick(View view) {
+                                                            String userUUID = GlobalSettings.getCurrentUserUUID();
+                                                           Toast.makeText(MainActivity.this, "userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
+                                                           //Toast.makeText(MainActivity.this, "JUST A TOAST FOR NOW", Toast.LENGTH_SHORT).show();
+                                                       }
+                                                   }
 
         );
-
-//
-//        final ListView listView = (ListView) findViewById(R.id.list);
-//        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressbar);
-//        progressBar.setVisibility(View.VISIBLE);
-//        PurchaseDetailsViewModel model = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
-//        model.getFruitList().observe(this, new Observer<List<String>>() {
-//            @Override
-//            public void onChanged(@Nullable List<String> strings)
-//            {
-//               // ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.class,android.R.layout.simple_list_item_1, android.R.id.text1);
-//                List<String> objects =  new ArrayList<>();
-//                objects.add("ONE");
-//                objects.add("TWO");
-//                objects.add("THREE");
-//                ArrayAdapter<String> adapter = new ArrayAdapter(MainActivity.this,android.R.layout.simple_list_item_1, android.R.id.text1, objects);
-//                // Assign adapter to ListView
-//                listView.setAdapter(adapter);
-//                progressBar.setVisibility(View.GONE);
-//            }
-//        } );
 
     }
 
@@ -164,8 +157,6 @@ public class MainActivity extends AppCompatActivity {
 
     private class JSONAsyncTask extends AsyncTask<String, Void, String> {
 
-        private ProgressDialog progressDialog;
-
         @Override
         protected String doInBackground(String... strings) {
             String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
@@ -198,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         protected PurchaseResponseBean doInBackground(String... strings) {
 
             String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
-            PurchaseResponseBean prb = NetworkUtils.purchasePost("001-002-003-004", "5326188d-653d-4173-be8e-d8f83486d0ad");
+            PurchaseResponseBean prb = NetworkUtils.purchasePost("001002003004", GlobalSettings.getCurrentUserUUID());
             return prb;
         }
 
@@ -206,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(PurchaseResponseBean prb) {
             progressDialog.dismiss();
             if (prb != null) {
+                PurchaseDetailsViewModel model = ViewModelProviders.of(MainActivity.this).get(PurchaseDetailsViewModel.class);
+                model.refreshPurchaseDetails();
                 Toast.makeText(MainActivity.this, "Purchase Data received is = " + prb.getPurchaseSerial(), Toast.LENGTH_SHORT).show();
             } else
                 Toast.makeText(MainActivity.this, "Purchase Data received is  empty", Toast.LENGTH_SHORT).show();

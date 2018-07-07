@@ -6,15 +6,15 @@ package com.sample.abhijeet.inventorymanager.beans;
 
 public class LoginResponseBean {
 
-    public String userUUID;
+    private String userUUID;
 
-    public String userFname;
+    private String userFname;
 
-    public String userLname;
+    private String userLname;
 
-    public Boolean isloginVerified;
+    private Boolean isloginVerified;
 
-    public String message="";
+    private String message="";
 
     public String getUserUUID() {
         return userUUID;
