@@ -4,8 +4,10 @@ import android.app.Application;
 
 import com.sample.abhijeet.inventorymanager.Data.Database;
 import com.sample.abhijeet.inventorymanager.R;
-import com.sample.abhijeet.inventorymanager.network.Repository;
-import com.sample.abhijeet.inventorymanager.network.RepositoryImpl;
+import com.sample.abhijeet.inventorymanager.network.LoginRepository;
+import com.sample.abhijeet.inventorymanager.network.LoginRepositoryImpl;
+import com.sample.abhijeet.inventorymanager.network.PurchaseRepository;
+import com.sample.abhijeet.inventorymanager.network.PurchaseRepositoryImpl;
 import com.sample.abhijeet.inventorymanager.network.Webservice;
 import com.sample.abhijeet.inventorymanager.util.AppExecutors;
 import com.sample.abhijeet.inventorymanager.util.MyApplication;
@@ -64,10 +66,10 @@ public class ApplicationModule
 
     @Singleton
     @Provides
-    Repository providesRepository()
+    PurchaseRepository providesPurchaseRepository()
     {
 
-        return new RepositoryImpl( providesWebservice(), providesAppExecutors(), providesDatabase());
+        return new PurchaseRepositoryImpl( providesWebservice(), providesAppExecutors(), providesDatabase());
     }
 
     @Singleton
@@ -82,6 +84,13 @@ public class ApplicationModule
     Database providesDatabase()
     {
         return Database.getInstance();
+    }
+
+    @Singleton
+    @Provides
+    LoginRepository providesLoginRepository()
+    {
+        return new LoginRepositoryImpl( providesWebservice(), providesAppExecutors(), providesDatabase());
     }
 
 }

@@ -26,9 +26,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 @Singleton
-public class RepositoryImpl implements Repository
+public class PurchaseRepositoryImpl implements PurchaseRepository
 {
-    private String LOG_TAG = RepositoryImpl.class.getSimpleName();
+    private String LOG_TAG = PurchaseRepositoryImpl.class.getSimpleName();
     Webservice mWebservice;
     AppExecutors mAppExecutors;
     Database mDatabase;
@@ -37,7 +37,7 @@ public class RepositoryImpl implements Repository
     private LiveData<Purchase[]> data = new MutableLiveData<>();
 
     @Inject
-    public RepositoryImpl(Webservice webservice, AppExecutors appExecutors, Database database)
+    public PurchaseRepositoryImpl(Webservice webservice, AppExecutors appExecutors, Database database)
     {
         this.mWebservice = webservice;
         this.mAppExecutors = appExecutors;
@@ -90,11 +90,10 @@ public class RepositoryImpl implements Repository
 
             @Override
             public void onFailure(Call<Purchase[]> call, Throwable t) {
-                Log.e(LOG_TAG,"FAILED TO GET PUCHASES");
+                Log.e(LOG_TAG,"FAILED TO GET PURCHASES");
             }
         });
     }
-
 
     /***** Saves purchases into database, Runs in a background Thread*****/
     public void savePurchasesIntoDatabase(Purchase[] purchases)

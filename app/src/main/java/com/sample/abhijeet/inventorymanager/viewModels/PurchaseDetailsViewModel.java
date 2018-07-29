@@ -8,7 +8,7 @@ import android.util.Log;
 import com.sample.abhijeet.inventorymanager.Data.Purchase;
 import com.sample.abhijeet.inventorymanager.modules.ApplicationModule;
 import com.sample.abhijeet.inventorymanager.modules.DaggerApplicationComponent;
-import com.sample.abhijeet.inventorymanager.network.Repository;
+import com.sample.abhijeet.inventorymanager.network.PurchaseRepository;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
 import com.sample.abhijeet.inventorymanager.util.MyApplication;
 
@@ -20,7 +20,7 @@ public class PurchaseDetailsViewModel  extends ViewModel
 
 
     @Inject
-    Repository repository;
+    PurchaseRepository purchaseRepository;
 
     String userUUID = GlobalSettings.getCurrentUserUUID();
 
@@ -37,7 +37,7 @@ public class PurchaseDetailsViewModel  extends ViewModel
     public LiveData< Purchase[]> getPurchaseList() {
         if (purchaseList == null) {
             purchaseList = new MutableLiveData<>();
-            purchaseList =   repository.getObserveablePurchasesForUser(userUUID);
+            purchaseList =   purchaseRepository.getObserveablePurchasesForUser(userUUID);
             refreshPurchases();
         }
         return purchaseList;
@@ -48,7 +48,7 @@ public class PurchaseDetailsViewModel  extends ViewModel
     {
         try {
             Log.e(LOG_TAG,"=========== Getting user purchases ==========");
-            repository.getObserveablePurchasesForUser(userUUID);
+            purchaseRepository.getObserveablePurchasesForUser(userUUID);
 
         }catch(Exception e)
         {
@@ -59,11 +59,11 @@ public class PurchaseDetailsViewModel  extends ViewModel
 
     public void savepurchases()
     {
-        repository.loadSavePurchasesFromNetwork(userUUID);
+        purchaseRepository.loadSavePurchasesFromNetwork(userUUID);
     }
 
     public void createPurchase(String barcode)
     {
-        repository.createPurchaseForUser(barcode);
+        purchaseRepository.createPurchaseForUser(barcode);
     }
 }

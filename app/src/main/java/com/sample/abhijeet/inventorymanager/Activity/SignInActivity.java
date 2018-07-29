@@ -1,5 +1,6 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.sample.abhijeet.inventorymanager.R;
+import com.sample.abhijeet.inventorymanager.beans.LoginResponseBean;
+import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
+import com.sample.abhijeet.inventorymanager.viewModels.LoginViewModel;
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -36,6 +40,7 @@ public class SignInActivity extends AppCompatActivity implements
     private TextView mTitleText;
     private Button mProceedButton;
     private static  boolean isUserSignedIN = false;
+    LoginViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,9 @@ public class SignInActivity extends AppCompatActivity implements
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
         mProceedButton.setOnClickListener(this);
+
+        //ViewModel For this activity
+        model = ViewModelProviders.of(this).get(LoginViewModel.class);
 
 
         // [START configure_signin]
@@ -166,12 +174,18 @@ public class SignInActivity extends AppCompatActivity implements
             mProceedButton.setVisibility(View.VISIBLE);
             isUserSignedIN = true;
             String token = account.getIdToken();
+            model.doLogin(token).observe(this, (loginResponseBean)->{
+                        if(loginResponseBean != null)
+                          proceedForCondition(loginResponseBean);
+                    }
+            );
+
            // Toast.makeText(this, "Token=" + token, Toast.LENGTH_SHORT).show();
-          /*  RepositoryImpl repository =  new RepositoryImpl();
+          /*  PurchaseRepositoryImpl repository =  new PurchaseRepositoryImpl();
             repository.loginUser(token)*/;
             //NetworkUtils.LoginPost(token);
            // NetworkUtils.LoginPost2(token);
-            proceedForCondition();
+
         } else {
             // Unsuccessfull Sign-In
             mStatusTextView.setText(R.string.signed_out);
@@ -182,7 +196,7 @@ public class SignInActivity extends AppCompatActivity implements
             isUserSignedIN = false;
         }
     }
-     private void proceedForCondition()
+     private void proceedForCondition(LoginResponseBean loginResponseBean)
     {
         String fromActivity = getIntent().getStringExtra("fromActivity");
         if(fromActivity !=null && fromActivity.equals(MainActivity.MAIN_ACTIVITY))
@@ -193,6 +207,7 @@ public class SignInActivity extends AppCompatActivity implements
         else
         {
             // Else, proceed and do not show the screen if User has already Signed-In
+            ApplicationUtils.getInstance().showToast(loginResponseBean.getMessage(),1);
             proceed();
         }
     }

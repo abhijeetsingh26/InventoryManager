@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.sample.abhijeet.inventorymanager.Data.Purchase;
 
-public interface Repository
+public interface PurchaseRepository
 {
     LiveData<Purchase[]> getObserveablePurchasesForUser(String userUUID);
     void loadSavePurchasesFromNetwork(String userUUID);

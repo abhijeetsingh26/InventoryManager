@@ -165,7 +165,6 @@ public class NetworkUtils {
         RequestParams params = new RequestParams();
         UserLoginBean ulb = new UserLoginBean();
         ulb.setIdToken(idToken);
-        ulb.setUser_email("xyz@gmail.com");
         ObjectMapper mapper = new ObjectMapper();
         String jsonAsString ="";
         StringEntity entity = null;
