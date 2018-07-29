@@ -3,17 +3,17 @@ package com.sample.abhijeet.inventorymanager.Activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -21,23 +21,30 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
-import com.sample.abhijeet.inventorymanager.beans.PurchaseDetailResponseBean;
 import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
-import com.sample.abhijeet.inventorymanager.models.PurchaseDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
+import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
+import com.sample.abhijeet.inventorymanager.viewModels.PurchaseDetailsViewModel;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
-    public static final String APP_DATA_PREFERECES = "appDataPrefrences";
-    public static final String APP_DATA_PREFERENCES_USER_UUID = "userUUID";
+    PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final RecyclerView listView = (RecyclerView) findViewById(R.id.main_ListView);
+        SwipeRefreshLayout swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
+
+        mPurchaseDetailsAdapter = new PurchaseDetailsBeanAdapter(MainActivity.this,null);
+        listView.setAdapter(mPurchaseDetailsAdapter);
+        listView.setLayoutManager(new LinearLayoutManager(this));
 
         //Listener for the main FAB button
         FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.addNewItemFAB);
@@ -55,43 +62,35 @@ public class MainActivity extends AppCompatActivity {
         );
 
 
-        FloatingActionButton mgetTestDataFAB = (FloatingActionButton) findViewById(R.id.getTestDataFAB);
-        mgetTestDataFAB.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View view) {
+        FloatingActionButton mgetTestDataFAB = findViewById(R.id.getTestDataFAB);
+        mgetTestDataFAB.setOnClickListener((View view)-> {
                                                    JSONAsyncTask task = new JSONAsyncTask();
                                                    task.execute("http://localhost:8080/inventorywebservice/api/user/1");
-                                                   SharedPreferences pref = getApplicationContext().getSharedPreferences(MainActivity.APP_DATA_PREFERECES, MODE_PRIVATE);
-                                                   SharedPreferences.Editor editor = pref.edit();
-                                                   String userUUID =  pref.getString(MainActivity.APP_DATA_PREFERENCES_USER_UUID, null);
-                                                   Toast.makeText(MainActivity.this, "userUUID" +userUUID, Toast.LENGTH_SHORT).show();
+                                                   Toast.makeText(MainActivity.this, "Test API call" , Toast.LENGTH_SHORT).show();
                                                }
-                                           }
 
         );
 
 
-
-        final ListView listView = (ListView) findViewById(R.id.main_ListView);
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        final ProgressBar progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.VISIBLE);
         PurchaseDetailsViewModel model = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
         model.getPurchaseList().observe(this, purchaseList -> {
             // update UI
-            ArrayAdapter<PurchaseDetailResponseBean> adapter = null;
             if(null != purchaseList)
-            adapter = new PurchaseDetailsBeanAdapter(MainActivity.this,R.layout.purchase_details_listitem, purchaseList);
-            listView.setAdapter(adapter);
+             mPurchaseDetailsAdapter.setPurchaseList(purchaseList);
+            mPurchaseDetailsAdapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
+            swipeContainer.setRefreshing(false);
+            ApplicationUtils.getInstance().showToast("CALLBACK CALLED", Toast.LENGTH_SHORT);
         });
 
-        FloatingActionButton mpostTestDataFAB = (FloatingActionButton) findViewById(R.id.postTestDataFAB);
+        FloatingActionButton mpostTestDataFAB = findViewById(R.id.postTestDataFAB);
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
                                                     PurchaseAsyncTask task = new PurchaseAsyncTask();
                                                     task.execute("xxxxx");
-
                                                 }
                                             }
 
@@ -102,12 +101,24 @@ public class MainActivity extends AppCompatActivity {
                                                        @Override
                                                        public void onClick(View view) {
                                                             String userUUID = GlobalSettings.getCurrentUserUUID();
-                                                           Toast.makeText(MainActivity.this, "userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
+                                                           Toast.makeText(MainActivity.this, "Getting purhcases for userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
+                                                           ApplicationUtils.getInstance().showSnackbar("SNACKKK", findViewById( R.id.mainCoordinatorLayout));
                                                            //Toast.makeText(MainActivity.this, "JUST A TOAST FOR NOW", Toast.LENGTH_SHORT).show();
                                                        }
                                                    }
 
         );
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                model.savepurchases();
+                swipeContainer.setRefreshing(true);
+            }
+        });
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,android.R.color.holo_green_light,android.R.color.holo_orange_light,android.R.color.holo_red_light);
 
     }
 
@@ -155,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private class JSONAsyncTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -198,30 +210,11 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.dismiss();
             if (prb != null) {
                 PurchaseDetailsViewModel model = ViewModelProviders.of(MainActivity.this).get(PurchaseDetailsViewModel.class);
-                model.refreshPurchaseDetails();
+               // model.refreshPurchaseDetails();
                 Toast.makeText(MainActivity.this, "Purchase Data received is = " + prb.getPurchaseSerial(), Toast.LENGTH_SHORT).show();
             } else
                 Toast.makeText(MainActivity.this, "Purchase Data received is  empty", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES, MODE_PRIVATE);
-        myPrefs.edit().remove(APP_DATA_PREFERENCES_USER_UUID);
-        myPrefs.edit().clear();
-        myPrefs.edit().commit();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        SharedPreferences myPrefs = this.getSharedPreferences(APP_DATA_PREFERECES, MODE_PRIVATE);
-        myPrefs.edit().remove(APP_DATA_PREFERENCES_USER_UUID);
-        myPrefs.edit().clear();
-        myPrefs.edit().commit();
     }
 }
 

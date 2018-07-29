@@ -2,7 +2,9 @@ package com.sample.abhijeet.inventorymanager.util;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 public class ApplicationUtils {
@@ -40,5 +42,12 @@ public class ApplicationUtils {
                 progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
                 progressDialog.show();
                 return progressDialog;
+    }
+
+    public void showSnackbar(String message, View view){
+        Snackbar snackbar = Snackbar
+                .make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.show();
     }
 }

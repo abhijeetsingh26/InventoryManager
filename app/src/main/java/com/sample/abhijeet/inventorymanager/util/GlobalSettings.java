@@ -3,7 +3,7 @@ package com.sample.abhijeet.inventorymanager.util;
 public class GlobalSettings {
 
   //  private static String currentUserUUID = "94941b89-fff6-44ab-a53e-037542a7d4a6";
-  private static String sCurrentUserUUID = "" ;
+  private static String sCurrentUserUUID = "94941b89-fff6-44ab-a53e-037542a7d4a6" ;
 
     public  static String getCurrentUserUUID() {
         return sCurrentUserUUID;
@@ -11,5 +11,5 @@ public class GlobalSettings {
 
     public static void setCurrentUserUUID(String currentUserUUID) {
         sCurrentUserUUID = currentUserUUID;
-    }
+   }
 }

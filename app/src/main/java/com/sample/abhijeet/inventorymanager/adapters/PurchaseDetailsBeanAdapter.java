@@ -1,55 +1,76 @@
 package com.sample.abhijeet.inventorymanager.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.sample.abhijeet.inventorymanager.Data.Purchase;
 import com.sample.abhijeet.inventorymanager.R;
-import com.sample.abhijeet.inventorymanager.beans.PurchaseDetailResponseBean;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class PurchaseDetailsBeanAdapter extends ArrayAdapter<PurchaseDetailResponseBean> {
+public class PurchaseDetailsBeanAdapter extends RecyclerView.Adapter<PurchaseDetailsBeanAdapter.ViewHolder> {
     private String LOG_TAG = "PurchaseDetailsBeanAdapter";
-    PurchaseDetailResponseBean[] pdrbArray = null;
+    List <Purchase> purchaseList = Collections.emptyList();
+    private LayoutInflater inflater;
 
-    public PurchaseDetailsBeanAdapter(@NonNull Context context, int resource, @NonNull PurchaseDetailResponseBean[] objects) {
-        super(context, resource, objects);
-        pdrbArray = objects;
+
+    public PurchaseDetailsBeanAdapter(Context ctx, Purchase[] data) {
+        inflater = LayoutInflater.from(ctx);
+
+        List <Purchase> purchaseList = new ArrayList<>();
+        if(data != null) {
+            for (Purchase currentBean : data) {
+                purchaseList.add(currentBean);
+            }
+        }
+        this.purchaseList = purchaseList;
     }
+
     @Override
-    public int getCount() {
-        return pdrbArray.length;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(parent);
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View v = convertView;
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        v = inflater.inflate(R.layout.purchase_details_listitem, null);
-        TextView itemNameTextView = (TextView) v.findViewById(R.id.purchaseDetailsList_itemName);
-        TextView itemPriceTextView = (TextView) v.findViewById(R.id.purchaseDetailsList_itemPrice);
-        TextView itemDateTextView = (TextView) v.findViewById(R.id.purchaseDetailsList_itemDate);
+    public void onBindViewHolder(PurchaseDetailsBeanAdapter.ViewHolder holder, int position) {
+    Purchase purchase = purchaseList.get(position);
+    holder.itemNameTextView.setText(purchase.getItemName());
+    holder.itemDateTextView.setText(purchase.getCreatedAt().toString());
+    holder.itemPriceTextView.setText(String.valueOf(purchase.getItemPrice()));
+    }
+    public void setPurchaseList(Purchase[] purchaseListIn)
+    {
+        List <Purchase> purchaseList = new ArrayList<>();
+        for (Purchase currentBean:purchaseListIn)
+        {
+            purchaseList.add(currentBean);
+        }
+            this.purchaseList = purchaseList;
+        notifyDataSetChanged();
+    }
 
-//        Log.e(LOG_TAG, "getView: ["+ pdrbArray+"]" );
-//        Log.e(LOG_TAG, "getView:position ["+ position+"]" );
-//        Log.e(LOG_TAG, "getView:itemNameTextView ["+ itemNameTextView+"]" );
-//        Log.e(LOG_TAG, "getView:itemPriceTextView ["+ itemPriceTextView+"]" );
-//        Log.e(LOG_TAG, "pdrbArray[position].getItemName() ["+ pdrbArray[position].getItemName()+"]" );
-//        Log.e(LOG_TAG, "pdrbArray[position].getItemPrice() ["+ pdrbArray[position].getItemPrice()+"]" );
-        String itemName = pdrbArray[position].getItemName();
-        String itemPrice = pdrbArray[position].getItemPrice() + "";
-        Date itemDate = pdrbArray[position].getModifiedAt();
-        String itemDateString =  itemDate.toString();
-        itemNameTextView.setText(itemName);
-        itemPriceTextView.setText(itemPrice);
-        itemDateTextView.setText(itemDateString);
-        return v;
+
+    @Override
+    public int getItemCount() {
+        return purchaseList.size();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        TextView itemNameTextView;
+        TextView itemPriceTextView;
+        TextView itemDateTextView;
+
+        ViewHolder(ViewGroup parent) {
+            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.purchase_details_listitem, parent, false));
+            itemNameTextView = (TextView) itemView.findViewById(R.id.purchaseDetailsList_itemName);
+            itemPriceTextView = (TextView) itemView.findViewById(R.id.purchaseDetailsList_itemPrice);
+            itemDateTextView = (TextView) itemView.findViewById(R.id.purchaseDetailsList_itemDate);
+        }
     }
 }
