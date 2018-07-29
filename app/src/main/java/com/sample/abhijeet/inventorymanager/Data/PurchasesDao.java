@@ -99,4 +99,12 @@ public interface PurchasesDao {
     @Query("Select * FROM " + Purchase.TABLE_NAME + " WHERE " + Purchase.COLUMN_USER_UUID + " = :userUUID")
     LiveData<Purchase[] > selectAllBySerial(String userUUID);
 
+    /**
+     * delete all purchases.
+     *
+     * @return A {@link Integer} which is number of rows deleted.
+     */
+    @Query("Delete FROM " + Purchase.TABLE_NAME)
+   int deleteAll();
+
 }

@@ -61,4 +61,9 @@ public class PurchaseDetailsViewModel  extends ViewModel
     {
         repository.loadSavePurchasesFromNetwork(userUUID);
     }
+
+    public void createPurchase(String barcode)
+    {
+        repository.createPurchaseForUser(barcode);
+    }
 }

@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
                                                        @Override
                                                        public void onClick(View view) {
                                                             String userUUID = GlobalSettings.getCurrentUserUUID();
-                                                           Toast.makeText(MainActivity.this, "Getting purhcases for userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
-                                                           ApplicationUtils.getInstance().showSnackbar("SNACKKK", findViewById( R.id.mainCoordinatorLayout));
-                                                           //Toast.makeText(MainActivity.this, "JUST A TOAST FOR NOW", Toast.LENGTH_SHORT).show();
+                                                           //Toast.makeText(MainActivity.this, "Getting purchases for userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
+                                                           ApplicationUtils.getInstance().showSnackbar("Creating a new Purchase", findViewById( R.id.mainCoordinatorLayout));
+                                                           model.createPurchase("001002003004");
                                                        }
                                                    }
 

@@ -8,4 +8,5 @@ public interface Repository
 {
     LiveData<Purchase[]> getObserveablePurchasesForUser(String userUUID);
     void loadSavePurchasesFromNetwork(String userUUID);
+    void createPurchaseForUser(String barcode);
 }
