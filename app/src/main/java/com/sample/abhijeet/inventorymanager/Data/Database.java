@@ -27,7 +27,7 @@ import javax.inject.Singleton;
 /**
  * The Room database.
  */
-@android.arch.persistence.room.Database(entities = {Purchase.class}, version = 1, exportSchema = false)
+@android.arch.persistence.room.Database(entities = {Purchase.class, ItemDetails.class}, version = 2, exportSchema = false)
 @Singleton
 public abstract class Database extends RoomDatabase {
 
@@ -36,6 +36,8 @@ public abstract class Database extends RoomDatabase {
      */
     @SuppressWarnings("WeakerAccess")
     public abstract PurchasesDao purchaseDao();
+
+    public abstract ItemDetailsDao itemDetailsDao();
 
     /** The only instance */
     private static Database sInstance;
@@ -49,7 +51,7 @@ public abstract class Database extends RoomDatabase {
     public static synchronized Database getInstance() {
         if (sInstance == null) {
             sInstance = Room
-                    .databaseBuilder(MyApplication.getAppContext(), Database.class, "InventoryManager").build();
+                    .databaseBuilder(MyApplication.getAppContext(), Database.class, "InventoryManager").fallbackToDestructiveMigration().build();
         }
         return sInstance;
     }

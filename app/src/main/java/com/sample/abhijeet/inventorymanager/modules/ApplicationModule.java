@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.sample.abhijeet.inventorymanager.Data.Database;
 import com.sample.abhijeet.inventorymanager.R;
+import com.sample.abhijeet.inventorymanager.network.ItemDetailsRepository;
+import com.sample.abhijeet.inventorymanager.network.ItemDetailsRepositoryImpl;
 import com.sample.abhijeet.inventorymanager.network.LoginRepository;
 import com.sample.abhijeet.inventorymanager.network.LoginRepositoryImpl;
 import com.sample.abhijeet.inventorymanager.network.PurchaseRepository;
@@ -91,6 +93,13 @@ public class ApplicationModule
     LoginRepository providesLoginRepository()
     {
         return new LoginRepositoryImpl( providesWebservice(), providesAppExecutors(), providesDatabase());
+    }
+
+    @Singleton
+    @Provides
+    ItemDetailsRepository providesItemDetailsRepository()
+    {
+        return new ItemDetailsRepositoryImpl( providesWebservice(), providesAppExecutors(), providesDatabase());
     }
 
 }

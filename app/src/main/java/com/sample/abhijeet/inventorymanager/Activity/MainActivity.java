@@ -23,6 +23,7 @@ import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
+import com.sample.abhijeet.inventorymanager.viewModels.ItemDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.viewModels.PurchaseDetailsViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,10 +31,14 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_BARCODE_CAPTURE = 9001;
     PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
     PurchaseDetailsViewModel purchaseViewModel;
+    ItemDetailsViewModel itemDetailsViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        purchaseViewModel = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
+        itemDetailsViewModel = ViewModelProviders.of(this).get(ItemDetailsViewModel.class);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -63,17 +68,16 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton mgetTestDataFAB = findViewById(R.id.getTestDataFAB);
         mgetTestDataFAB.setOnClickListener((View view)-> {
-                                                   JSONAsyncTask task = new JSONAsyncTask();
-                                                   task.execute("http://localhost:8080/inventorywebservice/api/user/1");
-                                                   Toast.makeText(MainActivity.this, "Test API call" , Toast.LENGTH_SHORT).show();
-                                               }
+            JSONAsyncTask task = new JSONAsyncTask();
+            task.execute("http://localhost:8080/inventorywebservice/api/user/1");
+            Toast.makeText(MainActivity.this, "Test API call" , Toast.LENGTH_SHORT).show();
+                }
 
         );
 
 
         final ProgressBar progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.VISIBLE);
-        purchaseViewModel = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
         purchaseViewModel.getPurchaseList().observe(this, purchaseList -> {
             // update UI
             if(null != purchaseList)
@@ -95,25 +99,21 @@ public class MainActivity extends AppCompatActivity {
         );
 
         FloatingActionButton mgetTestPurchaseDetails = (FloatingActionButton) findViewById(R.id.getTestPurchaseDetails);
-        mgetTestPurchaseDetails.setOnClickListener(new View.OnClickListener() {
-                                                       @Override
-                                                       public void onClick(View view) {
+        mgetTestPurchaseDetails.setOnClickListener((View view) -> {
                                                             String userUUID = GlobalSettings.getCurrentUserUUID();
                                                            //Toast.makeText(MainActivity.this, "Getting purchases for userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
                                                            ApplicationUtils.getInstance().showSnackbar("Creating a new Purchase", findViewById( R.id.mainCoordinatorLayout));
                                                            purchaseViewModel.createPurchase("001002003004");
                                                        }
-                                                   }
 
         );
 
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                purchaseViewModel.savepurchases();
+        swipeContainer.setOnRefreshListener(() -> {
+                purchaseViewModel.fetchAndSavePurchases();
+                itemDetailsViewModel.fetchAndSaveItemDetails();
                 swipeContainer.setRefreshing(true);
             }
-        });
+        );
 
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,android.R.color.holo_green_light,android.R.color.holo_orange_light,android.R.color.holo_red_light);

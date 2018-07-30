@@ -1,9 +1,12 @@
 package com.sample.abhijeet.inventorymanager.network;
 
+import com.sample.abhijeet.inventorymanager.Data.ItemDetails;
 import com.sample.abhijeet.inventorymanager.Data.Purchase;
 import com.sample.abhijeet.inventorymanager.beans.LoginResponseBean;
 import com.sample.abhijeet.inventorymanager.beans.PurchaseRequestBean;
 import com.sample.abhijeet.inventorymanager.beans.UserLoginBean;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -26,4 +29,8 @@ public interface Webservice
     @POST("item/purchaseNEW/")
     Call<Purchase[]> createPurchaseForUser(@Body PurchaseRequestBean purchaseRequestBean);
 
+
+    /* Get a list of all the available items*/
+    @GET("item/details/")
+    Call <List<ItemDetails>> getAllItems();
 }

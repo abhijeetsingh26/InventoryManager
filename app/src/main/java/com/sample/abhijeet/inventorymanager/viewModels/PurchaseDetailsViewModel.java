@@ -26,12 +26,10 @@ public class PurchaseDetailsViewModel  extends ViewModel
 
     //TODO: Remove field injection and implement a constructor injection
     {
-        DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(new MyApplication()))
-                .build() .inject(this);
+        DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(new MyApplication())).build() .inject(this);
     }
 
-    /************ The object that we retun ************/
+    /************ The object that we return ************/
     private LiveData< Purchase[]> purchaseList;
 
     public LiveData< Purchase[]> getPurchaseList() {
@@ -57,9 +55,9 @@ public class PurchaseDetailsViewModel  extends ViewModel
 
     }
 
-    public void savepurchases()
+    public void fetchAndSavePurchases()
     {
-        purchaseRepository.loadSavePurchasesFromNetwork(userUUID);
+        purchaseRepository.fetchAndSavePurchasesFromNetwork(userUUID);
     }
 
     public void createPurchase(String barcode)

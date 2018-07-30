@@ -59,7 +59,7 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
     }
 
 
-    public void loadSavePurchasesFromNetwork(String userUUID) {
+    public void fetchAndSavePurchasesFromNetwork(String userUUID) {
         mWebservice.getAllPurchasesForUser(userUUID).enqueue(new Callback<Purchase[]>() {
             @Override
             public void onResponse(@NonNull Call<Purchase[]> call, Response<Purchase[]> response) {
