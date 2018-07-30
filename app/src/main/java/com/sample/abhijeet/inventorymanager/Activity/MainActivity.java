@@ -1,6 +1,5 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
-import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -21,7 +20,6 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
-import com.sample.abhijeet.inventorymanager.beans.PurchaseResponseBean;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
@@ -31,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
     PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
+    PurchaseDetailsViewModel purchaseViewModel;
 
 
     @Override
@@ -74,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         final ProgressBar progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.VISIBLE);
-        PurchaseDetailsViewModel model = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
-        model.getPurchaseList().observe(this, purchaseList -> {
+        purchaseViewModel = ViewModelProviders.of(this).get(PurchaseDetailsViewModel.class);
+        purchaseViewModel.getPurchaseList().observe(this, purchaseList -> {
             // update UI
             if(null != purchaseList)
              mPurchaseDetailsAdapter.setPurchaseList(purchaseList);
@@ -89,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
-                                                    PurchaseAsyncTask task = new PurchaseAsyncTask();
-                                                    task.execute("xxxxx");
+                                                    ApplicationUtils.getInstance().showToast("Do nothing",0);
                                                 }
                                             }
 
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                                                             String userUUID = GlobalSettings.getCurrentUserUUID();
                                                            //Toast.makeText(MainActivity.this, "Getting purchases for userUUID: " +userUUID, Toast.LENGTH_SHORT).show();
                                                            ApplicationUtils.getInstance().showSnackbar("Creating a new Purchase", findViewById( R.id.mainCoordinatorLayout));
-                                                           model.createPurchase("001002003004");
+                                                           purchaseViewModel.createPurchase("001002003004");
                                                        }
                                                    }
 
@@ -112,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                model.savepurchases();
+                purchaseViewModel.savepurchases();
                 swipeContainer.setRefreshing(true);
             }
         });
@@ -147,14 +145,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(signInActivityIntent);
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_BARCODE_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     Toast.makeText(this, "Success, value= " + barcode.displayValue, Toast.LENGTH_SHORT).show();
-                    PurchaseAsyncTask task = new PurchaseAsyncTask();
-                    task.execute(barcode.displayValue);
+                    /*PurchaseAsyncTask task = new PurchaseAsyncTask();
+                    task.execute(barcode.displayValue);*/
+                   // purchaseViewModel.createPurchase("001002003004");
+                    ApplicationUtils.getInstance().showSnackbar("Saving Changes", findViewById( R.id.mainCoordinatorLayout));
+                    purchaseViewModel.createPurchase(barcode.displayValue);
                 } else {
                     Toast.makeText(this, "Failed to read barcode", Toast.LENGTH_SHORT).show();
                 }
@@ -182,40 +184,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private class PurchaseAsyncTask extends AsyncTask<String, Void, PurchaseResponseBean> {
-
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setTitle("Authenticating");
-            progressDialog.setMessage("Connecting to Server, Please wait.");
-            progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
-            progressDialog.show();
-        }
-
-        @Override
-        protected PurchaseResponseBean doInBackground(String... strings) {
-
-            String base_url = getApplicationContext().getResources().getString(R.string.SERVER_BASE_URL);
-            PurchaseResponseBean prb = NetworkUtils.purchasePost("001002003004", GlobalSettings.getCurrentUserUUID());
-            return prb;
-        }
-
-        @Override
-        protected void onPostExecute(PurchaseResponseBean prb) {
-            progressDialog.dismiss();
-            if (prb != null) {
-                PurchaseDetailsViewModel model = ViewModelProviders.of(MainActivity.this).get(PurchaseDetailsViewModel.class);
-               // model.refreshPurchaseDetails();
-                Toast.makeText(MainActivity.this, "Purchase Data received is = " + prb.getPurchaseSerial(), Toast.LENGTH_SHORT).show();
-            } else
-                Toast.makeText(MainActivity.this, "Purchase Data received is  empty", Toast.LENGTH_SHORT).show();
-        }
-    }
 }
 
 
