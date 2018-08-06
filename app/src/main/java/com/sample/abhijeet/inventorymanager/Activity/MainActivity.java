@@ -1,11 +1,13 @@
 package com.sample.abhijeet.inventorymanager.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,7 @@ import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
+import com.sample.abhijeet.inventorymanager.util.DialogUtils;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
 import com.sample.abhijeet.inventorymanager.viewModels.ItemDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.viewModels.PurchaseDetailsViewModel;
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
     PurchaseDetailsViewModel purchaseViewModel;
     ItemDetailsViewModel itemDetailsViewModel;
+    DialogInterface.OnClickListener positiveListner;
+    DialogInterface.OnClickListener negativeListner;
 
 
     @Override
@@ -42,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final RecyclerView listView = (RecyclerView) findViewById(R.id.main_ListView);
-        SwipeRefreshLayout swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        final RecyclerView listView = findViewById(R.id.main_ListView);
+        SwipeRefreshLayout swipeContainer =  findViewById(R.id.swipeContainer);
 
 
         mPurchaseDetailsAdapter = new PurchaseDetailsBeanAdapter(MainActivity.this,null);
@@ -51,17 +56,14 @@ public class MainActivity extends AppCompatActivity {
         listView.setLayoutManager(new LinearLayoutManager(this));
 
         //Listener for the main FAB button
-        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.addNewItemFAB);
-        FAB.setOnClickListener(new View.OnClickListener() {
-                                   @Override
-                                   public void onClick(View view) {
-                                       Intent intent = new Intent(MainActivity.this, BarcodeCaptureActivity.class);
-                                       intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
-                                       intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
+        FloatingActionButton FAB =  findViewById(R.id.addNewItemFAB);
+        FAB.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, BarcodeCaptureActivity.class);
+            intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+            intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
 
-                                       startActivityForResult(intent, RC_BARCODE_CAPTURE);
-                                   }
-                               }
+            startActivityForResult(intent, RC_BARCODE_CAPTURE);
+        }
 
         );
 
@@ -88,15 +90,35 @@ public class MainActivity extends AppCompatActivity {
             ApplicationUtils.getInstance().showToast("CALLBACK CALLED", Toast.LENGTH_SHORT);
         });
 
+        positiveListner = (dialog, id) -> {
+            //  Action for 'NO' Button
+            dialog.cancel();
+            Toast.makeText(getApplicationContext(),"Positive",
+                    Toast.LENGTH_SHORT).show();
+        };
+
+        negativeListner = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //  Action for 'NO' Button
+                dialog.cancel();
+                Toast.makeText(getApplicationContext(),"Negative",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+
         FloatingActionButton mpostTestDataFAB = findViewById(R.id.postTestDataFAB);
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
                                                     ApplicationUtils.getInstance().showToast("Do nothing",0);
+                                                   AlertDialog ad = DialogUtils.createGenericDialog(MainActivity.this,"message","title",false,"yes","No",positiveListner,negativeListner);
+                                                   ad.show();
                                                 }
                                             }
 
         );
+
+
 
         FloatingActionButton mgetTestPurchaseDetails = (FloatingActionButton) findViewById(R.id.getTestPurchaseDetails);
         mgetTestPurchaseDetails.setOnClickListener((View view) -> {
