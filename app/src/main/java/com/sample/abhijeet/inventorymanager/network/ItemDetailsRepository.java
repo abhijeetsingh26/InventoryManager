@@ -1,11 +1,12 @@
 package com.sample.abhijeet.inventorymanager.network;
 
-import android.arch.lifecycle.MediatorLiveData;
-
 import com.sample.abhijeet.inventorymanager.Data.ItemDetails;
 
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public interface ItemDetailsRepository {
-    MediatorLiveData<List<ItemDetails>> fetchAndSaveItemDetails();
+    void fetchAndSaveItemDetails();
+
+    ItemDetails fetchItemByBarcode(String barcode);
+
 }

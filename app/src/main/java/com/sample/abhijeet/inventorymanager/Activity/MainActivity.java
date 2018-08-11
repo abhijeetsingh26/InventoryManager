@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
+import com.sample.abhijeet.inventorymanager.Data.ItemDetails;
 import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
@@ -29,14 +30,15 @@ import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
 import com.sample.abhijeet.inventorymanager.viewModels.ItemDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.viewModels.PurchaseDetailsViewModel;
 
+import java.util.concurrent.CountDownLatch;
+
 public class MainActivity extends AppCompatActivity {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
     PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
     PurchaseDetailsViewModel purchaseViewModel;
     ItemDetailsViewModel itemDetailsViewModel;
-    DialogInterface.OnClickListener positiveListner;
-    DialogInterface.OnClickListener negativeListner;
+
 
 
     @Override
@@ -90,29 +92,14 @@ public class MainActivity extends AppCompatActivity {
             ApplicationUtils.getInstance().showToast("CALLBACK CALLED", Toast.LENGTH_SHORT);
         });
 
-        positiveListner = (dialog, id) -> {
-            //  Action for 'NO' Button
-            dialog.cancel();
-            Toast.makeText(getApplicationContext(),"Positive",
-                    Toast.LENGTH_SHORT).show();
-        };
 
-        negativeListner = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //  Action for 'NO' Button
-                dialog.cancel();
-                Toast.makeText(getApplicationContext(),"Negative",
-                        Toast.LENGTH_SHORT).show();
-            }
-        };
 
         FloatingActionButton mpostTestDataFAB = findViewById(R.id.postTestDataFAB);
         mpostTestDataFAB.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
                                                     ApplicationUtils.getInstance().showToast("Do nothing",0);
-                                                   AlertDialog ad = DialogUtils.createGenericDialog(MainActivity.this,"message","title",false,"yes","No",positiveListner,negativeListner);
-                                                   ad.show();
+                                                    createDialogForNewPurchase("4005900311511").show();
                                                 }
                                             }
 
@@ -166,6 +153,34 @@ public class MainActivity extends AppCompatActivity {
         signInActivityIntent.putExtra("fromActivity", MAIN_ACTIVITY);
         startActivity(signInActivityIntent);
     }
+    private AlertDialog createDialogForNewPurchase(String detectedBarcode)
+    {
+
+        ItemDetails itemDetails =  itemDetailsViewModel.fetchItemByBarcode(detectedBarcode);
+        DialogInterface.OnClickListener positiveListner = (dialog, id) -> {
+            //  Action for 'NO' Button
+            dialog.cancel();
+            purchaseViewModel.createPurchase(detectedBarcode);
+            Toast.makeText(getApplicationContext(),"Positive",
+                    Toast.LENGTH_SHORT).show();
+        };
+
+        DialogInterface.OnClickListener negativeListner = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //  Action for 'NO' Button
+                dialog.cancel();
+                Toast.makeText(getApplicationContext(),"Negative",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        String message = "";
+        if(itemDetails != null)
+            message = "Continue Purchasing " + itemDetails.getItemName() + "\nRs. " + itemDetails.getItemPrice();
+        else
+            message = "No details found for this item.";
+        AlertDialog ad = DialogUtils.createGenericDialog(MainActivity.this,message,"Confirm Purchase",false,"Yes, perfect.","No, go Back.",positiveListner,negativeListner);
+        return ad;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -177,8 +192,9 @@ public class MainActivity extends AppCompatActivity {
                     /*PurchaseAsyncTask task = new PurchaseAsyncTask();
                     task.execute(barcode.displayValue);*/
                    // purchaseViewModel.createPurchase("001002003004");
-                    ApplicationUtils.getInstance().showSnackbar("Saving Changes", findViewById( R.id.mainCoordinatorLayout));
-                    purchaseViewModel.createPurchase(barcode.displayValue);
+                    createDialogForNewPurchase(barcode.displayValue).show();
+
+                    /*** Code below the dialog is never executed for some unknown reasons***/
                 } else {
                     Toast.makeText(this, "Failed to read barcode", Toast.LENGTH_SHORT).show();
                 }

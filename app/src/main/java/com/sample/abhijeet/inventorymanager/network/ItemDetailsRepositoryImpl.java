@@ -1,13 +1,16 @@
 package com.sample.abhijeet.inventorymanager.network;
 
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.sample.abhijeet.inventorymanager.Data.Database;
 import com.sample.abhijeet.inventorymanager.Data.ItemDetails;
 import com.sample.abhijeet.inventorymanager.util.AppExecutors;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -35,7 +38,7 @@ public class ItemDetailsRepositoryImpl implements ItemDetailsRepository {
 
 
     @Override
-    public MediatorLiveData<List<ItemDetails>> fetchAndSaveItemDetails() {
+    public void fetchAndSaveItemDetails() {
         mWebservice.getAllItems().enqueue(new Callback<List<ItemDetails>>() {
             @Override
             public void onResponse(Call<List<ItemDetails>> call, Response<List<ItemDetails>> response) {
@@ -47,7 +50,25 @@ public class ItemDetailsRepositoryImpl implements ItemDetailsRepository {
                 Log.e(LOG_TAG,"IN Get all items Failed Block" + call.request(),t);
             }
         });
-        return null;
+    }
+
+    @Override
+    public ItemDetails fetchItemByBarcode(String barcode) {
+        CountDownLatch latch = new CountDownLatch(1);
+      final ArrayList <ItemDetails> itemDetailsList = new ArrayList<>();
+        mAppExecutors.diskIO().execute(()->{
+            itemDetailsList.add( mDatabase.itemDetailsDao().findItemByBarcode(barcode));
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(itemDetailsList.size() > 0)
+            return itemDetailsList.get(0);
+        else
+            return null;
     }
 
     private void saveAllItems(List<ItemDetails> itemDetails) {

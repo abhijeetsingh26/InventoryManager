@@ -17,6 +17,7 @@
 package com.sample.abhijeet.inventorymanager.Data;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
@@ -41,4 +42,7 @@ public interface ItemDetailsDao {
 
     @Query("Delete FROM " + ItemDetails.TABLE_NAME)
     int deleteAll();
+
+    @Query("Select * FROM " + ItemDetails.TABLE_NAME + " WHERE " + ItemDetails.COLUMN_ITEM_BARCODE + " = :barcode")
+    ItemDetails findItemByBarcode(String barcode);
 }

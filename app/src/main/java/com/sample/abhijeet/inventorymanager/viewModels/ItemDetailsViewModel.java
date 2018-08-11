@@ -1,6 +1,5 @@
 package com.sample.abhijeet.inventorymanager.viewModels;
 
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.sample.abhijeet.inventorymanager.Data.ItemDetails;
@@ -10,7 +9,7 @@ import com.sample.abhijeet.inventorymanager.network.ItemDetailsRepository;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
 import com.sample.abhijeet.inventorymanager.util.MyApplication;
 
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -25,8 +24,13 @@ public class ItemDetailsViewModel extends ViewModel {
        DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(new MyApplication())).build().inject(this);
     }
 
-    public MutableLiveData<List<ItemDetails>> fetchAndSaveItemDetails()
+    public void fetchAndSaveItemDetails()
     {
-        return itemDetailsRepository.fetchAndSaveItemDetails();
+        itemDetailsRepository.fetchAndSaveItemDetails();
+    }
+
+    public ItemDetails fetchItemByBarcode(String barcode)
+    {
+         return itemDetailsRepository.fetchItemByBarcode(barcode);
     }
 }
