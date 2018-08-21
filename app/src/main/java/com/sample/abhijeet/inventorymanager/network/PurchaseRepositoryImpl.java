@@ -96,8 +96,9 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
     }
 
     /***** Saves purchases into database, Runs in a background Thread*****/
-    public void savePurchasesIntoDatabaseOLD(Purchase[] purchases)
+    public void savePurchasesIntoDatabase(Purchase[] purchases)
     {
+        savePurchasesIntoDatabaseNEW(purchases);
         /*mAppExecutors.diskIO().execute(
                 () ->{
                     mDatabase.purchaseDao().deleteAll();
@@ -114,7 +115,7 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
         } });*/
     }
 
-    private void savePurchasesIntoDatabase(Purchase[] purchases)
+    private void savePurchasesIntoDatabaseNEW(Purchase[] purchases)
     {
         mAppExecutors.diskIO().execute(
                 () ->{

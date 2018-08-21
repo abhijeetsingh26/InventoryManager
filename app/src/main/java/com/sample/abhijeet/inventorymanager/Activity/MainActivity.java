@@ -161,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
             //  Action for 'NO' Button
             dialog.cancel();
             purchaseViewModel.createPurchase(detectedBarcode);
-            ApplicationUtils.getInstance().showSnackbar("Saving Changes", findViewById( R.id.mainCoordinatorLayout));
+            Toast.makeText(getApplicationContext(),"Positive",
+                    Toast.LENGTH_SHORT).show();
         };
 
         DialogInterface.OnClickListener negativeListner = new DialogInterface.OnClickListener() {
@@ -188,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     Toast.makeText(this, "Success, value= " + barcode.displayValue, Toast.LENGTH_SHORT).show();
+                    /*PurchaseAsyncTask task = new PurchaseAsyncTask();
+                    task.execute(barcode.displayValue);*/
+                   // purchaseViewModel.createPurchase("001002003004");
                     createDialogForNewPurchase(barcode.displayValue).show();
 
                     /*** Code below the dialog is never executed for some unknown reasons***/

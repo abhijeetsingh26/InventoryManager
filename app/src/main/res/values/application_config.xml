@@ -3,6 +3,6 @@
     <string name="SERVER_PORT">Inventory Manager</string>
     <string name="SERVER_PASSWORD">Inventory Manager</string>
     <string name="SERVER_USERNAME">Inventory Manager</string>
-    <string name="SERVER_CLIENT_ID">964454991177-uuo4k0at7bn2cnj79ilid9dp7cf4v4i3.apps.googleusercontent.com</string>
-    <string name="SERVER_BASE_URL">http://34.216.28.239:8091/inventorywebservice/</string>
+    <string name="SERVER_CLIENT_ID">dddd</string>
+    <string name="SERVER_BASE_URL">dddd</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.sample.abhijeet.inventorymanager.network;
 
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.sample.abhijeet.inventorymanager.Data.Database;
@@ -41,10 +42,7 @@ public class ItemDetailsRepositoryImpl implements ItemDetailsRepository {
         mWebservice.getAllItems().enqueue(new Callback<List<ItemDetails>>() {
             @Override
             public void onResponse(Call<List<ItemDetails>> call, Response<List<ItemDetails>> response) {
-                if (response.code() >= 200 && response.code() <300)
-                    saveItemToDatabase(response.body());
-                else
-                    Log.e(LOG_TAG,"IN response block" + call.request());
+                saveAllItems(response.body());
             }
 
             @Override
@@ -56,7 +54,6 @@ public class ItemDetailsRepositoryImpl implements ItemDetailsRepository {
 
     @Override
     public ItemDetails fetchItemByBarcode(String barcode) {
-        // Blocks current thread to make a sync Call
         CountDownLatch latch = new CountDownLatch(1);
       final ArrayList <ItemDetails> itemDetailsList = new ArrayList<>();
         mAppExecutors.diskIO().execute(()->{
@@ -74,12 +71,9 @@ public class ItemDetailsRepositoryImpl implements ItemDetailsRepository {
             return null;
     }
 
-    private void saveItemToDatabase(List<ItemDetails> itemDetails) {
+    private void saveAllItems(List<ItemDetails> itemDetails) {
         mAppExecutors.diskIO().execute(()->{
-            if(null != itemDetails) {
-                mDatabase.itemDetailsDao().deleteAll();
-                mDatabase.itemDetailsDao().insertAll(itemDetails);
-            }
+            mDatabase.itemDetailsDao().insertAll(itemDetails);
         });
     }
 }
