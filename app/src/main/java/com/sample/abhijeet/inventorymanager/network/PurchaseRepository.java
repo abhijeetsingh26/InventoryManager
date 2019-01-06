@@ -9,4 +9,5 @@ public interface PurchaseRepository
     LiveData<Purchase[]> getObserveablePurchasesForUser(String userUUID);
     void fetchAndSavePurchasesFromNetwork(String userUUID);
     void createPurchaseForUser(String barcode);
+    void deletePurchaseForUser(int purhcaseId);
 }

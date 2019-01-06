@@ -64,4 +64,9 @@ public class PurchaseDetailsViewModel  extends ViewModel
     {
         purchaseRepository.createPurchaseForUser(barcode);
     }
+
+    public void deletePurchase(int purchaseId)
+    {
+        purchaseRepository.deletePurchaseForUser(purchaseId);
+    }
 }

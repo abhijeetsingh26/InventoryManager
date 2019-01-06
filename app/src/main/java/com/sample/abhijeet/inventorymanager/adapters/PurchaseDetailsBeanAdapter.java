@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sample.abhijeet.inventorymanager.Data.Purchase;
@@ -43,6 +44,15 @@ public class PurchaseDetailsBeanAdapter extends RecyclerView.Adapter<PurchaseDet
     holder.itemDateTextView.setText(purchase.getCreatedAt().toString());
     holder.itemPriceTextView.setText(String.valueOf(purchase.getItemPrice()));
     }
+
+    public int deleteItemFromList(int position)
+    {
+        Purchase purchaseToDelete = purchaseList.get(position);
+        purchaseList.remove(position);
+        notifyItemRemoved(position);
+        return purchaseToDelete.purchaseSerial;
+    }
+
     public void setPurchaseList(Purchase[] purchaseListIn)
     {
         List <Purchase> purchaseList = new ArrayList<>();
@@ -60,11 +70,12 @@ public class PurchaseDetailsBeanAdapter extends RecyclerView.Adapter<PurchaseDet
         return purchaseList.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView itemNameTextView;
         TextView itemPriceTextView;
         TextView itemDateTextView;
+        public RelativeLayout viewBackground, viewForeground;
 
         ViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.purchase_details_listitem, parent, false));

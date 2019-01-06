@@ -9,8 +9,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,12 +30,11 @@ import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
 import com.sample.abhijeet.inventorymanager.util.DialogUtils;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
+import com.sample.abhijeet.inventorymanager.util.RecyclerItemTouchHelper;
 import com.sample.abhijeet.inventorymanager.viewModels.ItemDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.viewModels.PurchaseDetailsViewModel;
 
-import java.util.concurrent.CountDownLatch;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements  RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
     PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
@@ -56,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
         mPurchaseDetailsAdapter = new PurchaseDetailsBeanAdapter(MainActivity.this,null);
         listView.setAdapter(mPurchaseDetailsAdapter);
         listView.setLayoutManager(new LinearLayoutManager(this));
+        listView.setItemAnimator(new DefaultItemAnimator());
+        listView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(listView);
 
         //Listener for the main FAB button
         FloatingActionButton FAB =  findViewById(R.id.addNewItemFAB);
@@ -120,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(() -> {
                 purchaseViewModel.fetchAndSavePurchases();
                 itemDetailsViewModel.fetchAndSaveItemDetails();
-                swipeContainer.setRefreshing(true);
+                swipeContainer.setRefreshing(false);
             }
         );
 
@@ -200,6 +207,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+       int purhcaseId =  mPurchaseDetailsAdapter.deleteItemFromList(position);
+       purchaseViewModel.deletePurchase(purhcaseId);
+        Toast.makeText(this, "SWIPED", Toast.LENGTH_SHORT).show();
     }
 
 

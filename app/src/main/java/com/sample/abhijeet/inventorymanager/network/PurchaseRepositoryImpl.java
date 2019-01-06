@@ -95,6 +95,27 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
         });
     }
 
+    @Override
+    public void deletePurchaseForUser(int purhcaseId) {
+        try {
+            mWebservice.deletePurchaseById(purhcaseId).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    response.code();
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e(LOG_TAG,"Error while deleting a purchase",t);
+                }
+            });
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
     /***** Saves purchases into database, Runs in a background Thread*****/
     public void savePurchasesIntoDatabaseOLD(Purchase[] purchases)
     {
@@ -116,11 +137,14 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
 
     private void savePurchasesIntoDatabase(Purchase[] purchases)
     {
+        if(null != purchases)
+        {
         mAppExecutors.diskIO().execute(
                 () ->{
                     mDatabase.purchaseDao().deleteAll();
                     mDatabase.purchaseDao().insertAll(purchases);
                 });
+        }
     }
 
     private void loadPurchasesFromDatabase(String userUUID) {
