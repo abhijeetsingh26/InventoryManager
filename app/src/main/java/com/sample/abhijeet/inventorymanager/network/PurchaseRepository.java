@@ -10,4 +10,5 @@ public interface PurchaseRepository
     void fetchAndSavePurchasesFromNetwork(String userUUID);
     void createPurchaseForUser(String barcode);
     void deletePurchaseForUser(int purhcaseId);
+    void deletePurchaseForUserWithCallback(int purchaseId, APICallbacks apiCallbacks);
 }

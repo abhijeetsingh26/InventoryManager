@@ -115,6 +115,16 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
         }
     }
 
+    @Override
+    public void deletePurchaseForUserWithCallback(int purchaseId, APICallbacks apiCallbacks) {
+        try {
+            mWebservice.deletePurchaseById(purchaseId).enqueue(apiCallbacks);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
     /***** Saves purchases into database, Runs in a background Thread*****/
     public void savePurchasesIntoDatabaseOLD(Purchase[] purchases)
@@ -139,12 +149,17 @@ public class PurchaseRepositoryImpl implements PurchaseRepository
     {
         if(null != purchases)
         {
-        mAppExecutors.diskIO().execute(
+         mAppExecutors.diskIO().execute(
                 () ->{
                     mDatabase.purchaseDao().deleteAll();
                     mDatabase.purchaseDao().insertAll(purchases);
                 });
         }
+        else /*Means that there are no purchases , so we are deleting all*/
+            mAppExecutors.diskIO().execute(
+                    () ->{
+                        mDatabase.purchaseDao().deleteAll();
+                    });
     }
 
     private void loadPurchasesFromDatabase(String userUUID) {

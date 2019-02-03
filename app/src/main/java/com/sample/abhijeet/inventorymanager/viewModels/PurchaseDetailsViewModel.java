@@ -8,6 +8,7 @@ import android.util.Log;
 import com.sample.abhijeet.inventorymanager.Data.Purchase;
 import com.sample.abhijeet.inventorymanager.modules.ApplicationModule;
 import com.sample.abhijeet.inventorymanager.modules.DaggerApplicationComponent;
+import com.sample.abhijeet.inventorymanager.network.APICallbacks;
 import com.sample.abhijeet.inventorymanager.network.PurchaseRepository;
 import com.sample.abhijeet.inventorymanager.util.GlobalSettings;
 import com.sample.abhijeet.inventorymanager.util.MyApplication;
@@ -68,5 +69,10 @@ public class PurchaseDetailsViewModel  extends ViewModel
     public void deletePurchase(int purchaseId)
     {
         purchaseRepository.deletePurchaseForUser(purchaseId);
+    }
+
+    public void deletePurchaseWithCallback(int purchaseId, APICallbacks apiCallbacks)
+    {
+        purchaseRepository.deletePurchaseForUserWithCallback(purchaseId,apiCallbacks);
     }
 }

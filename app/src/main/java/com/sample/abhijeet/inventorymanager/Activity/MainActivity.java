@@ -24,8 +24,10 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.sample.abhijeet.inventorymanager.Data.ItemDetails;
+import com.sample.abhijeet.inventorymanager.Data.Purchase;
 import com.sample.abhijeet.inventorymanager.R;
 import com.sample.abhijeet.inventorymanager.adapters.PurchaseDetailsBeanAdapter;
+import com.sample.abhijeet.inventorymanager.network.APICallbacks;
 import com.sample.abhijeet.inventorymanager.network.NetworkUtils;
 import com.sample.abhijeet.inventorymanager.util.ApplicationUtils;
 import com.sample.abhijeet.inventorymanager.util.DialogUtils;
@@ -34,13 +36,16 @@ import com.sample.abhijeet.inventorymanager.util.RecyclerItemTouchHelper;
 import com.sample.abhijeet.inventorymanager.viewModels.ItemDetailsViewModel;
 import com.sample.abhijeet.inventorymanager.viewModels.PurchaseDetailsViewModel;
 
+import retrofit2.Call;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity implements  RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
     public static final String MAIN_ACTIVITY = "MainActivity";
     private static final int RC_BARCODE_CAPTURE = 9001;
     PurchaseDetailsBeanAdapter mPurchaseDetailsAdapter = null;
     PurchaseDetailsViewModel purchaseViewModel;
     ItemDetailsViewModel itemDetailsViewModel;
-
+    APICallbacks apiCallbacksForDeletingPurchase;
 
 
     @Override
@@ -134,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements  RecyclerItemTouc
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,android.R.color.holo_green_light,android.R.color.holo_orange_light,android.R.color.holo_red_light);
 
+
     }
 
     @Override
@@ -211,9 +217,24 @@ public class MainActivity extends AppCompatActivity implements  RecyclerItemTouc
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-       int purhcaseId =  mPurchaseDetailsAdapter.deleteItemFromList(position);
-       purchaseViewModel.deletePurchase(purhcaseId);
-        Toast.makeText(this, "SWIPED", Toast.LENGTH_SHORT).show();
+       Purchase purchaseObj =  mPurchaseDetailsAdapter.getItemAtPosition(position);
+       final int purchaseSerial = purchaseObj.getPurchaseSerial();
+        mPurchaseDetailsAdapter.deleteItemFromList(position);
+        /*Callbacks for deleting a purchase*/
+        purchaseViewModel.deletePurchaseWithCallback(purchaseSerial,new APICallbacks() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                Toast.makeText(MainActivity.this, "SWIPED", Toast.LENGTH_SHORT).show();
+                ApplicationUtils.getInstance().showSnackbar("Deleted Successfully", findViewById( R.id.mainCoordinatorLayout));
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Toast.makeText(MainActivity.this, "SWIPED", Toast.LENGTH_SHORT).show();
+                mPurchaseDetailsAdapter.addItemToList(position,purchaseObj);
+                ApplicationUtils.getInstance().showSnackbar("Not Deleted", findViewById( R.id.mainCoordinatorLayout));
+            }
+        });
     }
 
 

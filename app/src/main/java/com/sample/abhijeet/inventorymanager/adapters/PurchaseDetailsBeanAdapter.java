@@ -50,9 +50,20 @@ public class PurchaseDetailsBeanAdapter extends RecyclerView.Adapter<PurchaseDet
         Purchase purchaseToDelete = purchaseList.get(position);
         purchaseList.remove(position);
         notifyItemRemoved(position);
-        return purchaseToDelete.purchaseSerial;
+        return purchaseToDelete.getPurchaseSerial();
     }
 
+    public void addItemToList(int position, Purchase purchase)
+    {
+        purchaseList.add(position,purchase);
+        notifyItemInserted(position);
+    }
+
+    public Purchase getItemAtPosition(int position)
+    {
+        Purchase purchase = purchaseList.get(position);
+        return purchase;
+    }
     public void setPurchaseList(Purchase[] purchaseListIn)
     {
         List <Purchase> purchaseList = new ArrayList<>();

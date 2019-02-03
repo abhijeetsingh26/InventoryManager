@@ -8,7 +8,7 @@
     tools:context="com.sample.abhijeet.inventorymanager.Activity.MainActivity">
 
 
-    <android.support.design.widget.FloatingActionButton
+       <android.support.design.widget.FloatingActionButton
         android:id="@+id/addNewItemFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -90,22 +90,45 @@
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/main_ListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="24dp"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:fadeScrollbars="true"
-        app:layout_goneMarginStart="90dp"
-        app:layout_goneMarginEnd="90dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="vertical">
 
-    </android.support.v7.widget.RecyclerView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/amountLayout"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="TextView"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:id="@+id/textViewAmountValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="TextView"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/main_ListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/amountLayout"
+                android:fadeScrollbars="true"
+                app:layout_goneMarginStart="90dp"
+                app:layout_goneMarginEnd="90dp">
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar
@@ -120,4 +143,4 @@
         app:layout_anchorGravity="center"/>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+</android.support.design.widget.CoordinatorLayout>
